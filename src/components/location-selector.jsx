@@ -1,0 +1,137 @@
+'use client';
+import { useState, useRef, useEffect } from 'react';
+import { Search, MapPin, ChevronDown } from 'lucide-react';
+import { locations } from '@/data/locations';
+
+export function LocationSelector({ variant = 'default', onSelect, selectedId, className = '' }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState(() => locations.find((l) => l.id === selectedId) || null);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filtered = locations.filter((l) =>
+    l.name.toLowerCase().includes(search.toLowerCase()) ||
+    l.city.toLowerCase().includes(search.toLowerCase())
+  );
+
+  function handleSelect(loc) {
+    if (!loc.active) return;
+    setSelected(loc);
+    setIsOpen(false);
+    setSearch('');
+    onSelect?.(loc);
+  }
+
+  if (variant === 'compact') {
+    return (
+      <div ref={dropdownRef} className={`relative ${className}`}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-1.5 text-sm text-surface-600 hover:text-surface-900 transition-colors"
+        >
+          <MapPin size={16} />
+          <span className="font-medium hidden sm:inline">{selected?.name || 'Select Location'}</span>
+          <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+
+        {isOpen && (
+          <div className="absolute top-full mt-2 right-0 w-64 bg-white rounded-xl shadow-xl border border-surface-200 p-2 z-50">
+            <div className="relative mb-2">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
+              <input
+                type="text"
+                placeholder="Search area..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-sm border border-surface-200 rounded-lg focus:outline-none focus:border-brand-500"
+              />
+            </div>
+            <div className="max-h-48 overflow-y-auto">
+              {filtered.map((loc) => (
+                <button
+                  key={loc.id}
+                  onClick={() => handleSelect(loc)}
+                  disabled={!loc.active}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    selected?.id === loc.id
+                      ? 'bg-brand-50 text-brand-700 font-medium'
+                      : loc.active
+                      ? 'hover:bg-surface-50 text-surface-700'
+                      : 'text-surface-400 cursor-not-allowed'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>{loc.name}</span>
+                    {!loc.active && <span className="text-xs text-surface-400">{loc.note}</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div ref={dropdownRef} className={`relative ${className}`}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-surface-200 rounded-xl shadow-sm hover:border-brand-300 transition-colors text-left"
+      >
+        <MapPin size={20} className="text-brand-600 shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="text-xs text-surface-500">Where do you need a service?</div>
+          <div className="font-semibold text-surface-900 truncate">{selected?.name || 'Select your area'}</div>
+        </div>
+        <ChevronDown size={18} className={`text-surface-400 transition-transform shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full mt-2 left-0 right-0 bg-white rounded-xl shadow-xl border border-surface-200 p-2 z-50">
+          <div className="relative mb-2">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
+            <input
+              type="text"
+              placeholder="Search your area..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-3 py-2.5 text-sm border border-surface-200 rounded-lg focus:outline-none focus:border-brand-500"
+            />
+          </div>
+          <div className="max-h-56 overflow-y-auto">
+            {filtered.map((loc) => (
+              <button
+                key={loc.id}
+                onClick={() => handleSelect(loc)}
+                disabled={!loc.active}
+                className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                  selected?.id === loc.id
+                    ? 'bg-brand-50 text-brand-700 font-medium'
+                    : loc.active
+                    ? 'hover:bg-surface-50 text-surface-700'
+                    : 'text-surface-400 cursor-not-allowed'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span>{loc.name}</span>
+                  {!loc.active && <span className="text-xs">{loc.note}</span>}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

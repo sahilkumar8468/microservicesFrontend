@@ -1,0 +1,31 @@
+export const locations = [
+  { id: 'dha-5', name: 'DHA Phase 5', city: 'Karachi', active: true },
+  { id: 'dha-6', name: 'DHA Phase 6', city: 'Karachi', active: true },
+  { id: 'dha-7', name: 'DHA Phase 7', city: 'Karachi', active: true },
+  { id: 'dha-8', name: 'DHA Phase 8', city: 'Karachi', active: true },
+  { id: 'clifton', name: 'Clifton', city: 'Karachi', active: true },
+  { id: 'pechs', name: 'PECHS', city: 'Karachi', active: true },
+  { id: 'gulshan', name: 'Gulshan-e-Iqbal', city: 'Karachi', active: true },
+  { id: 'gulistan-jauhar', name: 'Gulistan-e-Jauhar', city: 'Karachi', active: true },
+  { id: 'nazimabad', name: 'Nazimabad', city: 'Karachi', active: true },
+  { id: 'north-nazimabad', name: 'North Nazimabad', city: 'Karachi', active: true },
+  { id: 'bahadurabad', name: 'Bahadurabad', city: 'Karachi', active: true },
+  { id: 'karsaz', name: 'Karsaz', city: 'Karachi', active: false, note: 'Coming soon' },
+  { id: 'malir', name: 'Malir', city: 'Karachi', active: false, note: 'Coming soon' },
+];
+
+export const locationServices = {
+  'dha-5': ['plumbing', 'electrical', 'ac-repair', 'carpenter', 'handyman', 'water-tank-cleaning', 'home-decoration', 'furniture-transformation'],
+  'dha-6': ['plumbing', 'electrical', 'ac-repair', 'carpenter', 'handyman', 'water-tank-cleaning', 'home-decoration', 'furniture-transformation'],
+  'dha-7': ['plumbing', 'electrical', 'ac-repair', 'carpenter', 'handyman', 'water-tank-cleaning', 'home-decoration', 'furniture-transformation'],
+  'dha-8': ['plumbing', 'electrical', 'ac-repair', 'carpenter', 'handyman', 'water-tank-cleaning', 'home-decoration'],
+  'clifton': ['plumbing', 'electrical', 'ac-repair', 'carpenter', 'handyman', 'water-tank-cleaning', 'home-decoration', 'furniture-transformation'],
+  'pechs': ['plumbing', 'electrical', 'ac-repair', 'carpenter', 'handyman', 'water-tank-cleaning', 'home-decoration'],
+  'gulshan': ['plumbing', 'electrical', 'ac-repair', 'carpenter', 'handyman', 'water-tank-cleaning', 'home-decoration'],
+  'gulistan-jauhar': ['plumbing', 'electrical', 'ac-repair', 'handyman', 'water-tank-cleaning'],
+  'nazimabad': ['plumbing', 'electrical', 'ac-repair', 'handyman', 'water-tank-cleaning'],
+  'north-nazimabad': ['plumbing', 'electrical', 'ac-repair', 'carpenter', 'handyman', 'water-tank-cleaning'],
+  'bahadurabad': ['plumbing', 'electrical', 'ac-repair', 'handyman', 'water-tank-cleaning'],
+  'karsaz': [],
+  'malir': [],
+};
