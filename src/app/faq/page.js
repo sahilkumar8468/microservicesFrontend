@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { HelpCircle, Search, MessageCircle, ChevronDown } from 'lucide-react';
 import { faqData } from '@/data/faq';
 import { siteConfig } from '@/data/site-config';
-import CTASection from '@/components/cta-section';
+import { CTASection } from '@/components/cta-section';
 
 export default function FAQPage() {
   const [searchQuery, setSearchQuery] = useState('');

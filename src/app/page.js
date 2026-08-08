@@ -26,9 +26,9 @@ export default function HomePage() {
       <HowItWorksSection />
       <ShowProblemSection />
       <LocationServicesSection />
-      <FurnitureTransformSection />
+      {/* <FurnitureTransformSection />
       <HomeDecorationSection />
-      <BeforeAfterShowcaseSection />
+      <BeforeAfterShowcaseSection /> */}
       <WhyChooseUsSection />
       <QualityTrustSection />
 

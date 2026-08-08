@@ -2,7 +2,7 @@
 
 import { Wrench, FileText, Camera, MapPin, Calendar, CheckCircle, ArrowRight, Star, Shield, Clock } from 'lucide-react';
 import Link from 'next/link';
-import CTASection from '@/components/cta-section';
+import { CTASection } from '@/components/cta-section';
 
 const steps = [
   {

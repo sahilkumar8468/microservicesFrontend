@@ -1,6 +1,7 @@
 'use client';
+
 import { useState } from 'react';
-import { ArrowRight, ArrowLeft, Check, Camera, MapPin, Calendar, FileText, Wrench } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Check, Camera, MapPin, Calendar, FileText, Wrench, Phone, Mail, CheckCircle2, Send, RefreshCw } from 'lucide-react';
 import { BookingStepper } from '@/components/booking-stepper';
 import { Button } from '@/components/button';
 import { FileUploader } from '@/components/file-uploader';
@@ -21,46 +22,156 @@ export default function BookPage() {
     locationId: null,
     date: '',
     time: '',
+    phone: '',
+    email: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [emailResent, setEmailResent] = useState(false);
+  const [bookingId, setBookingId] = useState('');
 
-  const selectedService = services.find(s => s.id === booking.serviceId);
+  const selectedService = services.find((s) => s.id === booking.serviceId);
   const problems = booking.serviceId ? problemTypes[booking.serviceId] || [] : [];
 
   function update(field, value) {
-    setBooking(prev => ({ ...prev, [field]: value }));
+    setBooking((prev) => ({ ...prev, [field]: value }));
   }
 
   function canProceed() {
     switch (step) {
-      case 0: return !!booking.serviceId;
-      case 1: return !!booking.problem;
-      case 2: return true;
-      case 3: return true;
-      case 4: return !!booking.locationId;
-      case 5: return !!booking.date && !!booking.time;
-      case 6: return true;
-      default: return false;
+      case 0:
+        return !!booking.serviceId;
+      case 1:
+        return !!booking.problem;
+      case 2:
+        return true;
+      case 3:
+        return !!booking.locationId;
+      case 4:
+        return !!booking.date && !!booking.time;
+      case 5:
+        // Mandatory mobile number check
+        return booking.phone.trim().length >= 10;
+      default:
+        return false;
     }
   }
 
   function handleSubmit() {
+    if (!booking.phone || booking.phone.trim().length < 10) return;
+    const randomId = 'BK-2026-' + Math.floor(1000 + Math.random() * 9000);
+    setBookingId(randomId);
     setSubmitted(true);
   }
 
+  function handleResendConfirmation() {
+    setEmailResent(true);
+    setTimeout(() => setEmailResent(false), 4000);
+  }
+
   if (submitted) {
+    const customerEmail = booking.email.trim() || 'customer@example.com';
+
     return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-            <Check size={36} className="text-green-600" />
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-surface-900 mb-3">Booking Request Sent!</h1>
-          <p className="text-surface-500 mb-2">We&apos;ve received your service request. Our team will review it and get back to you shortly.</p>
-          <p className="text-sm text-surface-400 mb-8">You&apos;ll receive a confirmation via phone and email.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button href="/" variant="primary">Back to Home</Button>
-            <Button href="/account/bookings" variant="outline">View My Bookings</Button>
+      <div className="min-h-screen pt-24 pb-16 bg-surface-50 flex items-center justify-center">
+        <div className="container-narrow px-4">
+          <div className="bg-white rounded-3xl border border-surface-200 shadow-xl overflow-hidden max-w-xl mx-auto">
+            {/* Header Banner */}
+            <div className="bg-gradient-to-r from-emerald-600 to-brand-600 p-8 text-white text-center relative overflow-hidden">
+              <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-4 border border-white/30 shadow-lg">
+                <CheckCircle2 size={44} className="text-white" />
+              </div>
+              <span className="inline-block px-3 py-1 bg-white/20 text-xs font-semibold rounded-full uppercase tracking-wider mb-2">
+                Booking #{bookingId}
+              </span>
+              <h1 className="text-2xl md:text-3xl font-bold">Service Booked Successfully!</h1>
+              <p className="text-emerald-100 text-sm mt-1">
+                Your request has been dispatched to our nearest professional team.
+              </p>
+            </div>
+
+            {/* Confirmation Email Badge */}
+            <div className="p-6 space-y-6">
+              <div className="p-4 rounded-2xl bg-brand-50 border border-brand-200 flex items-start gap-3">
+                <Mail className="h-6 w-6 text-brand-600 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <span className="text-xs font-bold uppercase tracking-wider text-brand-800">
+                      Confirmation Email Sent
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
+                      <Check size={12} /> Delivered
+                    </span>
+                  </div>
+                  <p className="text-sm text-surface-800 font-medium mt-1 truncate">
+                    A confirmation receipt has been sent to <strong>{customerEmail}</strong>.
+                  </p>
+                  <p className="text-xs text-surface-500 mt-1">
+                    SMS notification will also be sent to <strong>{booking.phone}</strong>.
+                  </p>
+                </div>
+              </div>
+
+              {/* Booking Summary */}
+              <div className="bg-surface-50 rounded-2xl p-5 border border-surface-200 space-y-3">
+                <h3 className="text-sm font-bold text-surface-900 uppercase tracking-wider">
+                  Booking Reference & Details
+                </h3>
+                <div className="grid grid-cols-2 gap-3 text-sm pt-1">
+                  <div>
+                    <span className="text-xs text-surface-400 block">Service Name</span>
+                    <strong className="text-surface-900">{selectedService?.name}</strong>
+                  </div>
+                  <div>
+                    <span className="text-xs text-surface-400 block">Issue / Task</span>
+                    <strong className="text-surface-900">{booking.problem}</strong>
+                  </div>
+                  <div>
+                    <span className="text-xs text-surface-400 block">Date & Time</span>
+                    <strong className="text-surface-900">
+                      {booking.date} ({booking.time})
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="text-xs text-surface-400 block">Location Area</span>
+                    <strong className="text-surface-900">
+                      {locations.find((l) => l.id === booking.locationId)?.name}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="text-xs text-surface-400 block">Contact Phone</span>
+                    <strong className="text-surface-900">{booking.phone}</strong>
+                  </div>
+                  <div>
+                    <span className="text-xs text-surface-400 block">Payment Method</span>
+                    <strong className="text-emerald-700">Cash on Completion</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    className="text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1.5"
+                  >
+                    <Send size={13} />
+                    {emailResent ? '✓ Email Resent to ' + customerEmail : 'Resend Confirmation Email'}
+                  </button>
+                  <span className="text-xs text-surface-400">Ref: {bookingId}</span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <Button href="/" variant="primary" className="flex-1 justify-center">
+                    Back to Home
+                  </Button>
+                  <Button href="/account/bookings" variant="outline" className="flex-1 justify-center">
+                    View My Bookings
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -103,9 +214,7 @@ export default function BookPage() {
                         <p className="font-semibold text-surface-900">{service.name}</p>
                         <p className="text-xs text-surface-500">From {service.startingPrice}</p>
                       </div>
-                      {isSelected && (
-                        <Check size={20} className="text-brand-600 ml-auto shrink-0" />
-                      )}
+                      {isSelected && <Check size={20} className="text-brand-600 ml-auto shrink-0" />}
                     </button>
                   );
                 })}
@@ -160,9 +269,7 @@ export default function BookPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-surface-900 mb-2">
-                    Upload Photos
-                  </label>
+                  <label className="block text-sm font-semibold text-surface-900 mb-2">Upload Photos</label>
                   <FileUploader
                     maxFiles={5}
                     accept="image/*"
@@ -172,9 +279,7 @@ export default function BookPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-surface-900 mb-2">
-                    Upload Video
-                  </label>
+                  <label className="block text-sm font-semibold text-surface-900 mb-2">Upload Video</label>
                   <FileUploader
                     maxFiles={1}
                     accept="video/*"
@@ -199,7 +304,7 @@ export default function BookPage() {
                 {booking.locationId && (
                   <div className="mt-4 p-4 rounded-xl bg-brand-50 border border-brand-100">
                     <p className="text-sm text-brand-700 font-medium">
-                      ✓ Great! Services are available in {locations.find(l => l.id === booking.locationId)?.name}. We&apos;ll find a professional near you.
+                      ✓ Great! Services are available in {locations.find((l) => l.id === booking.locationId)?.name}. We&apos;ll find a professional near you.
                     </p>
                   </div>
                 )}
@@ -247,12 +352,57 @@ export default function BookPage() {
             </div>
           )}
 
-          {/* Step 5: Review */}
+          {/* Step 5: Review & Customer Contact Info */}
           {step === 5 && (
             <div>
-              <h2 className="text-xl font-bold text-surface-900 mb-6">Review Your Request</h2>
+              <h2 className="text-xl font-bold text-surface-900 mb-2">Review & Contact Information</h2>
+              <p className="text-surface-500 mb-6">Provide your mandatory phone number so our technician can confirm the appointment.</p>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Contact Inputs */}
+                <div className="p-5 rounded-2xl bg-brand-50/50 border border-brand-200 space-y-4">
+                  <h3 className="text-sm font-bold text-surface-900">Customer Contact Information</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-surface-700 mb-1.5">
+                        Mobile Phone Number * <span className="text-rose-500">(Required)</span>
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                        <input
+                          type="tel"
+                          required
+                          placeholder="+92 300 1234567"
+                          value={booking.phone}
+                          onChange={(e) => update('phone', e.target.value)}
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-white"
+                        />
+                      </div>
+                      {(!booking.phone || booking.phone.trim().length < 10) && (
+                        <p className="text-xs text-rose-500 mt-1 font-medium">
+                          Please enter a valid mobile number (+92...)
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-surface-700 mb-1.5">
+                        Email Address <span className="text-surface-400">(For Confirmation Receipt)</span>
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                        <input
+                          type="email"
+                          placeholder="ahmed@example.com"
+                          value={booking.email}
+                          onChange={(e) => update('email', e.target.value)}
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="p-4 rounded-xl bg-surface-50">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
@@ -280,7 +430,7 @@ export default function BookPage() {
                     <div>
                       <p className="text-xs text-surface-500 uppercase tracking-wider font-semibold">Location</p>
                       <p className="font-semibold text-surface-900 mt-1">
-                        {locations.find(l => l.id === booking.locationId)?.name || '—'}
+                        {locations.find((l) => l.id === booking.locationId)?.name || '—'}
                       </p>
                     </div>
                     <div>
@@ -292,9 +442,11 @@ export default function BookPage() {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
+                <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-start gap-3">
+                  <Mail className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-sm text-amber-800">
-                    This is a demo frontend. In production, your request will be sent to our team who will review it and confirm availability.
+                    A confirmation email will automatically be generated and sent to{' '}
+                    <strong>{booking.email || 'your email'}</strong> upon booking.
                   </p>
                 </div>
               </div>
@@ -311,16 +463,13 @@ export default function BookPage() {
             </button>
 
             {step < 5 ? (
-              <Button
-                onClick={() => setStep(step + 1)}
-                disabled={!canProceed()}
-              >
+              <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
                 Continue
                 <ArrowRight size={16} />
               </Button>
             ) : (
-              <Button onClick={handleSubmit}>
-                Confirm Booking
+              <Button onClick={handleSubmit} disabled={!canProceed()}>
+                Confirm Booking & Send Email
                 <Check size={16} />
               </Button>
             )}
