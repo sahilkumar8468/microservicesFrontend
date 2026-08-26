@@ -3,10 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, CheckCircle, RefreshCw, KeyRound } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, CheckCircle, RefreshCw, KeyRound, Globe } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register, googleSignIn } = useAuth();
+  
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', password: '' });
   const [agreed, setAgreed] = useState(false);
@@ -21,6 +24,12 @@ export default function RegisterPage() {
   const [verifiedSuccess, setVerifiedSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Google Selector Modal State
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
+  const [customGoogleName, setCustomGoogleName] = useState('');
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
+
   useEffect(() => {
     let interval;
     if (otpStep && timer > 0) {
@@ -28,20 +37,6 @@ export default function RegisterPage() {
     }
     return () => clearInterval(interval);
   }, [otpStep, timer]);
-
-  // Handle Google Direct Sign Up
-  const handleGoogleSignUp = () => {
-    const defaultEmail = formData.email || 'user.google@gmail.com';
-    const defaultName = formData.name || 'Google User';
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    setFormData((prev) => ({ ...prev, name: defaultName, email: defaultEmail }));
-    setTargetEmail(defaultEmail);
-    setGeneratedOtp(otp);
-    setTimer(60);
-    setErrorMsg('');
-    setOtpStep(true);
-  };
 
   // Handle Form Submission -> Trigger OTP
   const handleSubmit = (e) => {
@@ -88,8 +83,8 @@ export default function RegisterPage() {
     setErrorMsg('');
   };
 
-  // Verify OTP
-  const handleVerifyOtp = (e) => {
+  // Verify OTP & Save to Database
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
     const entered = otpCode.join('');
     if (entered.length < 6) {
@@ -97,22 +92,46 @@ export default function RegisterPage() {
       return;
     }
 
+    if (entered !== generatedOtp && entered !== '123456') {
+      setErrorMsg(`Invalid OTP code. For demo, use ${generatedOtp} or 123456.`);
+      return;
+    }
+
     setIsVerifying(true);
-    setTimeout(() => {
+    setErrorMsg('');
+    try {
+      // Call backend register API
+      await register(formData.name, formData.email, formData.phone, formData.password);
+      
+      setVerifiedSuccess(true);
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to connect to backend server. Make sure the API is running.');
+    } finally {
       setIsVerifying(false);
-      if (entered === generatedOtp || entered === '123456') {
-        setVerifiedSuccess(true);
-        setTimeout(() => {
-          router.push('/login');
-        }, 2000);
-      } else {
-        setErrorMsg(`Invalid OTP code. For demo, use ${generatedOtp} or 123456.`);
-      }
-    }, 1000);
+    }
+  };
+
+  // Execute Google Authentication with backend
+  const handleGoogleAuth = async (email, name) => {
+    setIsGoogleSubmitting(true);
+    setErrorMsg('');
+    try {
+      const googleId = 'g_' + Math.floor(10000000 + Math.random() * 90000000);
+      await googleSignIn(email, name, googleId);
+      setShowGoogleModal(false);
+      router.push('/account');
+    } catch (err) {
+      setErrorMsg(err.message || 'Google authentication failed.');
+    } finally {
+      setIsGoogleSubmitting(false);
+    }
   };
 
   return (
-    <main className="min-h-screen flex">
+    <main className="min-h-screen flex relative">
       {/* Left - Form */}
       <div className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-white">
         <div className="w-full max-w-md">
@@ -130,12 +149,18 @@ export default function RegisterPage() {
             </p>
           </div>
 
+          {errorMsg && (
+            <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-600 text-sm font-semibold rounded-xl">
+              {errorMsg}
+            </div>
+          )}
+
           {!otpStep ? (
             <>
               {/* Google Direct Sign Up Button */}
               <button
                 type="button"
-                onClick={handleGoogleSignUp}
+                onClick={() => setShowGoogleModal(true)}
                 className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-surface-200 bg-white hover:bg-surface-50 text-surface-700 font-semibold transition-all shadow-sm mb-6"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -287,9 +312,9 @@ export default function RegisterPage() {
               {verifiedSuccess ? (
                 <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
                   <CheckCircle className="h-12 w-12 text-emerald-600 mx-auto animate-bounce" />
-                  <h3 className="text-xl font-bold text-emerald-900">Email Verified Successfully!</h3>
+                  <h3 className="text-xl font-bold text-emerald-900">Email Verified & Registered!</h3>
                   <p className="text-sm text-emerald-700">
-                    Your account has been created. Redirecting to login...
+                    Your account has been created on the database. Redirecting to login...
                   </p>
                 </div>
               ) : (
@@ -314,10 +339,6 @@ export default function RegisterPage() {
                     </div>
                   </div>
 
-                  {errorMsg && (
-                    <p className="text-xs font-semibold text-rose-600 text-center">{errorMsg}</p>
-                  )}
-
                   <button
                     type="submit"
                     disabled={isVerifying}
@@ -325,7 +346,7 @@ export default function RegisterPage() {
                   >
                     {isVerifying ? (
                       <>
-                        <RefreshCw className="h-4 w-4 animate-spin" /> Verifying OTP...
+                        <RefreshCw className="h-4 w-4 animate-spin" /> Registering in Backend...
                       </>
                     ) : (
                       <>
@@ -395,6 +416,113 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
+
+      {/* --- MOCK GOOGLE SELECTOR MODAL --- */}
+      {showGoogleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl border border-surface-200 shadow-2xl p-6 relative animate-in fade-in-50 zoom-in-95 duration-200">
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 rounded-full bg-surface-50 flex items-center justify-center mx-auto mb-3 border border-surface-200">
+                <svg className="w-6 h-6" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.29v3.15C3.26 21.3 7.33 24 12 24z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.29C.47 8.21 0 10.05 0 12s.47 3.79 1.29 5.42l3.99-3.15z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.7 1.29 6.58l3.99 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-surface-900">Sign in with Google</h2>
+              <p className="text-sm text-surface-500 mt-1">Choose an account to continue to HomeSolution</p>
+            </div>
+
+            <div className="space-y-2">
+              {[
+                { name: 'Fatima Ali', email: 'fatima.ali@gmail.com' },
+                { name: 'Zeeshan Khan', email: 'zeeshan.khan@gmail.com' }
+              ].map((acc) => (
+                <button
+                  key={acc.email}
+                  disabled={isGoogleSubmitting}
+                  onClick={() => handleGoogleAuth(acc.email, acc.name)}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-surface-100 hover:border-brand-300 hover:bg-brand-50/50 text-left transition-all group"
+                >
+                  <div className="w-10 h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold">
+                    {acc.name.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-surface-950 truncate">{acc.name}</p>
+                    <p className="text-xs text-surface-500 truncate">{acc.email}</p>
+                  </div>
+                  <span className="text-xs text-brand-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                    Select &rarr;
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="relative flex items-center justify-center my-4">
+              <div className="border-t border-surface-100 w-full" />
+              <span className="bg-white px-2.5 text-[10px] font-bold uppercase tracking-wider text-surface-400 absolute">
+                Or Use Custom Google Account
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Google Account Full Name"
+                  value={customGoogleName}
+                  onChange={(e) => setCustomGoogleName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-surface-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                />
+              </div>
+              <div>
+                <input
+                  type="email"
+                  placeholder="google.user@gmail.com"
+                  value={customGoogleEmail}
+                  onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-surface-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGoogleModal(false)}
+                  className="flex-1 py-2.5 border border-surface-200 hover:bg-surface-50 text-surface-600 rounded-xl text-sm font-semibold transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={isGoogleSubmitting || !customGoogleEmail || !customGoogleName}
+                  onClick={() => handleGoogleAuth(customGoogleEmail, customGoogleName)}
+                  className="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-1.5"
+                >
+                  {isGoogleSubmitting ? (
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                  ) : (
+                    'Connect Account'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

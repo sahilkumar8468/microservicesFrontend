@@ -6,8 +6,37 @@ import { locations } from '@/data/locations';
 export function LocationSelector({ variant = 'default', onSelect, selectedId, className = '' }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [activeLocations, setActiveLocations] = useState(locations);
   const [selected, setSelected] = useState(() => locations.find((l) => l.id === selectedId) || null);
   const dropdownRef = useRef(null);
+
+  const API_URL = 'http://localhost:5000/api';
+
+  useEffect(() => {
+    fetchServiceAreaConfig();
+  }, []);
+
+  const fetchServiceAreaConfig = async () => {
+    try {
+      const res = await fetch(`${API_URL}/service-area`);
+      if (res.ok) {
+        const config = await res.json();
+        if (config.coveredLocations && Array.isArray(config.coveredLocations)) {
+          const updated = locations.map(loc => {
+            const isCovered = config.coveredLocations.includes(loc.id);
+            return {
+              ...loc,
+              active: isCovered,
+              note: isCovered ? loc.note : 'Out of active radius'
+            };
+          });
+          setActiveLocations(updated);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to sync service area config in LocationSelector:', e);
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -19,7 +48,7 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filtered = locations.filter((l) =>
+  const filtered = activeLocations.filter((l) =>
     l.name.toLowerCase().includes(search.toLowerCase()) ||
     l.city.toLowerCase().includes(search.toLowerCase())
   );

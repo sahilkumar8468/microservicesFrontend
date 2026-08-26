@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import {
   LayoutDashboard, Calendar, MapPin, User, Settings, LogOut,
-  Clock, CheckCircle, XCircle, ChevronRight, Plus, Star, Phone, Mail
+  Clock, CheckCircle, XCircle, ChevronRight, Plus, Star, Phone, Mail,
+  ShieldCheck, RefreshCw
 } from 'lucide-react';
 
 const tabs = [
@@ -12,20 +15,6 @@ const tabs = [
   { id: 'bookings', label: 'My Bookings', icon: Calendar },
   { id: 'addresses', label: 'Saved Addresses', icon: MapPin },
   { id: 'profile', label: 'Profile', icon: User },
-];
-
-// Mock data — will be replaced by API
-const mockUser = {
-  name: 'Ahmed Khan',
-  email: 'ahmed@example.com',
-  phone: '+92 300 1234567',
-  memberSince: 'March 2025',
-};
-
-const mockBookings = [
-  { id: 'BK-001', service: 'Plumbing', problem: 'Tap is leaking', date: '15 Aug 2026', time: '11:00 AM', status: 'confirmed', address: 'DHA Phase 6, Karachi', price: 'PKR 1,500' },
-  { id: 'BK-002', service: 'AC Repair', problem: 'AC not cooling', date: '12 Aug 2026', time: '02:00 PM', status: 'completed', address: 'DHA Phase 6, Karachi', price: 'PKR 3,200' },
-  { id: 'BK-003', service: 'Electrical', problem: 'Fan not working', date: '05 Aug 2026', time: '10:00 AM', status: 'cancelled', address: 'DHA Phase 6, Karachi', price: 'PKR 800' },
 ];
 
 const mockAddresses = [
@@ -41,27 +30,112 @@ const statusConfig = {
 };
 
 export default function AccountPage() {
+  const router = useRouter();
+  const { user, token, loading, logout, updateProfile, API_URL } = useAuth();
+  
   const [activeTab, setActiveTab] = useState('overview');
+  const [bookings, setBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
+  
+  // Profile form state
+  const [profileForm, setProfileForm] = useState({ name: '', phone: '' });
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileSuccessMsg, setProfileSuccessMsg] = useState('');
+  const [profileErrorMsg, setProfileErrorMsg] = useState('');
+
+  // Redirect to login if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  // Sync profile form state when user changes
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        name: user.name || '',
+        phone: user.phone || ''
+      });
+      fetchUserBookings();
+    }
+  }, [user]);
+
+  // Fetch actual bookings from backend
+  const fetchUserBookings = async () => {
+    if (!user || !user.email) return;
+    setLoadingBookings(true);
+    try {
+      const res = await fetch(`${API_URL}/bookings?email=${encodeURIComponent(user.email)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setBookings(data);
+      }
+    } catch (e) {
+      console.error('Error fetching user bookings:', e);
+    } finally {
+      setLoadingBookings(false);
+    }
+  };
+
+  // Handle Profile Update
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setProfileSaving(true);
+    setProfileSuccessMsg('');
+    setProfileErrorMsg('');
+    try {
+      await updateProfile(profileForm.name, profileForm.phone);
+      setProfileSuccessMsg('Profile changes saved successfully!');
+    } catch (err) {
+      setProfileErrorMsg(err.message || 'Failed to save changes.');
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
+  const handleLogoutClick = async () => {
+    await logout();
+    router.push('/login');
+  };
+
+  if (loading || (!user && !loading)) {
+    return (
+      <main className="min-h-screen bg-surface-50 flex items-center justify-center pt-24 pb-16">
+        <div className="text-center space-y-4">
+          <RefreshCw className="h-10 w-10 text-brand-600 animate-spin mx-auto" />
+          <p className="text-sm font-semibold text-surface-500">Checking session & loading account...</p>
+        </div>
+      </main>
+    );
+  }
+
+  // Stats calculation
+  const totalCount = bookings.length;
+  const completedCount = bookings.filter(b => b.status === 'completed').length;
+  const pendingCount = bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length;
 
   return (
     <main className="min-h-screen bg-surface-50 pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-4 gap-8">
+          
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl border border-surface-200 p-6 sticky top-28">
+            <div className="bg-white rounded-2xl border border-surface-200 p-6 sticky top-28 space-y-6">
+              
               {/* User Info */}
-              <div className="flex items-center gap-4 mb-6 pb-6 border-b border-surface-100">
+              <div className="flex items-center gap-4 pb-6 border-b border-surface-100">
                 <div className="w-12 h-12 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-lg">
-                  {mockUser.name.charAt(0)}
+                  {user.name.charAt(0)}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-surface-900 truncate">{mockUser.name}</p>
-                  <p className="text-sm text-surface-400 truncate">{mockUser.email}</p>
+                  <p className="font-semibold text-surface-900 truncate">{user.name}</p>
+                  <p className="text-sm text-surface-400 truncate">{user.email}</p>
                 </div>
               </div>
 
-              {/* Nav */}
+              {/* Navigation Tabs */}
               <nav className="space-y-1">
                 {tabs.map((tab) => (
                   <button
@@ -79,8 +153,26 @@ export default function AccountPage() {
                 ))}
               </nav>
 
-              <div className="mt-6 pt-6 border-t border-surface-100">
-                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-500 hover:bg-rose-50 transition-all">
+              {/* Admin Portal Quicklink */}
+              <div className="pt-4 border-t border-surface-100">
+                <Link
+                  href="/admin"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-all"
+                >
+                  <ShieldCheck className="h-4 w-4 text-brand-600" />
+                  Admin Panel &rarr;
+                </Link>
+                <p className="text-[10px] text-surface-400 mt-1 text-center font-medium">
+                  Login credentials: <strong>admin</strong> / <strong>admin1</strong>
+                </p>
+              </div>
+
+              {/* Sign Out */}
+              <div className="pt-4 border-t border-surface-100">
+                <button
+                  onClick={handleLogoutClick}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-500 hover:bg-rose-50 transition-all"
+                >
                   <LogOut className="h-4 w-4" />
                   Sign Out
                 </button>
@@ -90,21 +182,22 @@ export default function AccountPage() {
 
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
+            
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <>
                 {/* Stats */}
                 <div className="grid sm:grid-cols-3 gap-4">
                   {[
-                    { label: 'Total Bookings', value: '12', icon: Calendar, color: 'bg-brand-50 text-brand-600' },
-                    { label: 'Completed', value: '8', icon: CheckCircle, color: 'bg-emerald-50 text-emerald-600' },
-                    { label: 'Upcoming', value: '2', icon: Clock, color: 'bg-amber-50 text-amber-600' },
+                    { label: 'Total Bookings', value: totalCount, icon: Calendar, color: 'bg-brand-50 text-brand-600' },
+                    { label: 'Completed', value: completedCount, icon: CheckCircle, color: 'bg-emerald-50 text-emerald-600' },
+                    { label: 'Upcoming / Pending', value: pendingCount, icon: Clock, color: 'bg-amber-50 text-amber-600' },
                   ].map((stat) => (
                     <div key={stat.label} className="bg-white rounded-2xl border border-surface-200 p-5">
                       <div className={`w-10 h-10 rounded-xl ${stat.color} flex items-center justify-center mb-3`}>
                         <stat.icon className="h-5 w-5" />
                       </div>
-                      <p className="text-2xl font-bold text-surface-900">{stat.value}</p>
+                      <p className="text-2xl font-bold text-surface-900">{loadingBookings ? '...' : stat.value}</p>
                       <p className="text-sm text-surface-400">{stat.label}</p>
                     </div>
                   ))}
@@ -118,36 +211,43 @@ export default function AccountPage() {
                       View All <ChevronRight className="h-4 w-4" />
                     </button>
                   </div>
-                  <div className="space-y-4">
-                    {mockBookings.slice(0, 3).map((booking) => {
-                      const status = statusConfig[booking.status];
-                      const StatusIcon = status.icon;
-                      return (
-                        <Link
-                          key={booking.id}
-                          href={`/account/bookings/${booking.id}`}
-                          className="flex items-center justify-between p-4 rounded-xl border border-surface-100 hover:border-brand-200 hover:shadow-sm transition-all"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-surface-100 flex items-center justify-center">
-                              <Calendar className="h-4 w-4 text-surface-500" />
+                  
+                  {loadingBookings ? (
+                    <div className="text-center py-8 text-surface-400">Loading history...</div>
+                  ) : bookings.length === 0 ? (
+                    <div className="text-center py-8 text-surface-400">No recent bookings.</div>
+                  ) : (
+                    <div className="space-y-4">
+                      {bookings.slice(0, 3).map((booking) => {
+                        const status = statusConfig[booking.status] || statusConfig.pending;
+                        const StatusIcon = status.icon;
+                        return (
+                          <Link
+                            key={booking.id}
+                            href={`/account/bookings/${booking.id}`}
+                            className="flex items-center justify-between p-4 rounded-xl border border-surface-100 hover:border-brand-200 hover:shadow-sm transition-all"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-xl bg-surface-100 flex items-center justify-center">
+                                <Calendar className="h-4 w-4 text-surface-500" />
+                              </div>
+                              <div>
+                                <p className="font-semibold text-surface-900">{booking.serviceName}</p>
+                                <p className="text-sm text-surface-400">{booking.date} · {booking.time}</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-semibold text-surface-900">{booking.service}</p>
-                              <p className="text-sm text-surface-400">{booking.date} · {booking.time}</p>
+                            <div className="flex items-center gap-3">
+                              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}>
+                                <StatusIcon className="h-3 w-3" />
+                                {status.label}
+                              </span>
+                              <ChevronRight className="h-4 w-4 text-surface-300" />
                             </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}>
-                              <StatusIcon className="h-3 w-3" />
-                              {status.label}
-                            </span>
-                            <ChevronRight className="h-4 w-4 text-surface-300" />
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 {/* Quick Actions */}
@@ -175,7 +275,12 @@ export default function AccountPage() {
             {activeTab === 'bookings' && (
               <div className="bg-white rounded-2xl border border-surface-200 p-6">
                 <h2 className="text-lg font-bold text-surface-900 mb-6">My Bookings</h2>
-                {mockBookings.length === 0 ? (
+                {loadingBookings ? (
+                  <div className="text-center py-16">
+                    <RefreshCw className="h-10 w-10 text-brand-600 animate-spin mx-auto mb-2" />
+                    <p className="text-sm text-surface-400">Loading booking records...</p>
+                  </div>
+                ) : bookings.length === 0 ? (
                   <div className="text-center py-16">
                     <Calendar className="h-16 w-16 text-surface-200 mx-auto mb-4" />
                     <h3 className="text-xl font-bold text-surface-700 mb-2">No bookings yet</h3>
@@ -186,8 +291,8 @@ export default function AccountPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {mockBookings.map((booking) => {
-                      const status = statusConfig[booking.status];
+                    {bookings.map((booking) => {
+                      const status = statusConfig[booking.status] || statusConfig.pending;
                       const StatusIcon = status.icon;
                       return (
                         <Link
@@ -201,7 +306,7 @@ export default function AccountPage() {
                             </div>
                             <div>
                               <div className="flex items-center gap-3 mb-1">
-                                <p className="font-semibold text-surface-900">{booking.service}</p>
+                                <p className="font-semibold text-surface-900">{booking.serviceName}</p>
                                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${status.className}`}>
                                   <StatusIcon className="h-3 w-3" />
                                   {status.label}
@@ -264,53 +369,81 @@ export default function AccountPage() {
                 <h2 className="text-lg font-bold text-surface-900 mb-6">Profile Settings</h2>
                 <div className="flex items-center gap-5 mb-8 pb-8 border-b border-surface-100">
                   <div className="w-20 h-20 rounded-2xl bg-brand-600 flex items-center justify-center text-white font-bold text-3xl">
-                    {mockUser.name.charAt(0)}
+                    {user.name.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-xl font-bold text-surface-900">{mockUser.name}</p>
-                    <p className="text-sm text-surface-400">Member since {mockUser.memberSince}</p>
+                    <p className="text-xl font-bold text-surface-900">{user.name}</p>
+                    <p className="text-sm text-surface-400">Registered member</p>
                   </div>
                 </div>
 
-                <div className="space-y-5 max-w-lg">
+                {profileSuccessMsg && (
+                  <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-semibold rounded-xl">
+                    {profileSuccessMsg}
+                  </div>
+                )}
+
+                {profileErrorMsg && (
+                  <div className="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-600 text-sm font-semibold rounded-xl">
+                    {profileErrorMsg}
+                  </div>
+                )}
+
+                <form onSubmit={handleProfileUpdate} className="space-y-5 max-w-lg">
                   <div>
                     <label className="block text-sm font-semibold text-surface-700 mb-2">Full Name</label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-300" />
                       <input
                         type="text"
-                        defaultValue={mockUser.name}
+                        required
+                        value={profileForm.name}
+                        onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                         className="w-full pl-12 pr-4 py-3 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
                       />
                     </div>
                   </div>
+                  
                   <div>
                     <label className="block text-sm font-semibold text-surface-700 mb-2">Phone Number</label>
                     <div className="relative">
                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-300" />
                       <input
                         type="tel"
-                        defaultValue={mockUser.phone}
+                        value={profileForm.phone}
+                        onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
                         className="w-full pl-12 pr-4 py-3 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
                       />
                     </div>
                   </div>
+
                   <div>
                     <label className="block text-sm font-semibold text-surface-700 mb-2">Email Address</label>
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-300" />
                       <input
                         type="email"
-                        defaultValue={mockUser.email}
-                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                        disabled
+                        value={user.email}
+                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-surface-200 text-surface-400 bg-surface-50 cursor-not-allowed"
                       />
                     </div>
+                    <span className="text-[10px] text-surface-400 mt-1 block">Email address cannot be changed.</span>
                   </div>
-                  <button className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-white font-semibold hover:bg-brand-700 transition-colors">
-                    <Settings className="h-4 w-4" />
+
+                  <button
+                    type="submit"
+                    disabled={profileSaving}
+                    className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-white font-semibold hover:bg-brand-700 transition-colors disabled:opacity-50"
+                  >
+                    {profileSaving ? (
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Settings className="h-4 w-4" />
+                    )}
                     Save Changes
                   </button>
-                </div>
+                </form>
               </div>
             )}
           </div>

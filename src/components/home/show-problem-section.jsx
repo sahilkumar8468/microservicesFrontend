@@ -1,80 +1,209 @@
 'use client';
-import { Camera, Video, FileText } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Camera, Video, FileText, CheckCircle2, ShieldCheck, Sparkles, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/button';
 import { useScrollAnimation } from '@/hooks/use-scroll-animation';
 
+const animatedStates = [
+  {
+    step: 'Step 1 of 3',
+    title: '📸 Photo & Video Upload',
+    subtitle: 'AI Diagnostic Scanner Active',
+    badge: 'Scanning Leak / Damage...',
+    progress: '35%',
+    icon: Camera,
+    color: 'from-blue-600 to-indigo-600',
+    statusBg: 'bg-blue-500/20 text-blue-300 border-blue-400/30'
+  },
+  {
+    step: 'Step 2 of 3',
+    title: '⚡ Instant Diagnosis',
+    subtitle: 'Microservice Partner Matching',
+    badge: 'Evaluating Solution Cost...',
+    progress: '70%',
+    icon: Sparkles,
+    color: 'from-amber-600 to-orange-600',
+    statusBg: 'bg-amber-500/20 text-amber-300 border-amber-400/30'
+  },
+  {
+    step: 'Step 3 of 3',
+    title: '✅ Technician Dispatched',
+    subtitle: 'Verified Arrival Scheduled',
+    badge: 'Worker Arriving in 15 Mins',
+    progress: '100%',
+    icon: CheckCircle2,
+    color: 'from-emerald-600 to-teal-600',
+    statusBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30'
+  }
+];
+
 export function ShowProblemSection() {
   const { ref, isVisible } = useScrollAnimation();
+  const [activeStepIdx, setActiveStepIdx] = useState(0);
+
+  // Continuous animation loop for mobile screen mockup
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveStepIdx((prev) => (prev + 1) % animatedStates.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
+
+  const currentState = animatedStates[activeStepIdx];
+  const StepIcon = currentState.icon;
 
   return (
-    <section className="py-20 md:py-28 bg-surface-900 text-white overflow-hidden">
-      <div ref={ref} className="container-wide">
+    <section className="py-20 md:py-28 bg-gradient-to-b from-surface-950 via-slate-950 to-surface-900 text-white overflow-hidden relative">
+      {/* Background glowing halo */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-600/10 blur-[140px] pointer-events-none" />
+
+      <div ref={ref} className="container-wide relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          
           {/* Left content */}
           <div className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
-            <span className="text-sm font-semibold tracking-wider uppercase text-brand-400 mb-3 block">
-              Unique Feature
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-xs font-extrabold tracking-wider uppercase text-orange-400 mb-4 shadow-inner">
+              <Sparkles size={14} className="animate-spin text-orange-400" />
+              Smart Photo & Video Assessment
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance leading-[1.15]">
-              Not Sure What the Problem Is?
+            
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-balance leading-[1.15]">
+              Not Sure What the <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-rose-400">Problem Is?</span>
             </h2>
-            <p className="mt-4 text-lg text-surface-400 max-w-lg leading-relaxed">
-              Don&apos;t worry. Show us what you&apos;re dealing with and our team can review it. No technical knowledge needed.
+            
+            <p className="mt-4 text-base sm:text-lg text-surface-400 max-w-lg leading-relaxed font-medium">
+              Don&apos;t worry! Simply snap a photo or record a quick video walkthrough. Our team identifies the exact issue, sends a price estimate, and dispatches a verified technician with the right tools.
             </p>
 
-            <div className="mt-8 space-y-4">
+            <div className="mt-8 space-y-3.5">
               {[
-                { icon: Camera, text: 'Upload Photos', desc: 'Snap a picture of the problem' },
-                { icon: Video, text: 'Upload Video', desc: 'Record a short video walkthrough' },
-                { icon: FileText, text: 'Describe the Problem', desc: 'Tell us in your own words' },
+                { icon: Camera, text: 'Snap Photos', desc: 'Capture any leak, noise, or broken fixture' },
+                { icon: Video, text: 'Record Video Walkthrough', desc: 'Record a short video to show sound or movement' },
+                { icon: FileText, text: 'Describe in Your Own Words', desc: 'Add optional notes so technicians arrive prepared' },
               ].map((item) => (
-                <div key={item.text} className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-brand-600/20 flex items-center justify-center shrink-0">
-                    <item.icon size={20} className="text-brand-400" />
+                <div key={item.text} className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all hover:border-brand-500/40 group">
+                  <div className="w-11 h-11 rounded-xl bg-brand-600/20 border border-brand-500/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <item.icon size={22} className="text-brand-400" />
                   </div>
                   <div>
-                    <div className="font-semibold text-white">{item.text}</div>
-                    <div className="text-sm text-surface-400">{item.desc}</div>
+                    <div className="font-bold text-white text-base">{item.text}</div>
+                    <div className="text-xs text-surface-400 mt-0.5 font-medium">{item.desc}</div>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="mt-8">
-              <Button href="/book" variant="outlineLight" size="lg">
-                Request an Assessment
+              <Button href="/book" variant="primary" size="lg" className="shadow-lg shadow-brand-600/30 font-bold rounded-xl px-8">
+                Request Free Assessment
               </Button>
             </div>
           </div>
 
-          {/* Right visual */}
+          {/* Right visual — Continuous Mobile Animation Loop */}
           <div className={`relative transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
             <div className="relative mx-auto max-w-sm">
-              {/* Phone mockup */}
-              <div className="relative rounded-[2.5rem] border-4 border-surface-700 bg-surface-800 p-3 shadow-2xl">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-7 bg-surface-700 rounded-b-2xl" />
-                <div className="aspect-[9/16] rounded-[1.75rem] bg-gradient-to-b from-brand-50 to-brand-100 overflow-hidden flex flex-col items-center justify-center p-6 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center mb-4">
-                    <Camera size={28} className="text-brand-600" />
+              
+              {/* Smartphone Frame Mockup */}
+              <div className="relative rounded-[3rem] border-[6px] border-surface-700/80 bg-slate-950 p-4 shadow-2xl shadow-brand-500/20 ring-1 ring-white/20">
+                {/* Speaker Notch */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-surface-700 rounded-b-2xl z-30 flex items-center justify-center">
+                  <div className="w-10 h-1 bg-surface-900 rounded-full" />
+                </div>
+
+                {/* Mobile Screen Display Container */}
+                <div className="aspect-[9/18] rounded-[2.2rem] bg-gradient-to-b from-slate-900 via-brand-950 to-slate-950 overflow-hidden flex flex-col justify-between p-6 relative border border-white/10">
+                  
+                  {/* Continuous Scanning Laser Beam Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-brand-500/0 via-brand-500/25 to-brand-500/0 animate-scan pointer-events-none z-10" />
+
+                  {/* Header Status Bar */}
+                  <div className="flex items-center justify-between pt-3 relative z-20">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-surface-400">
+                      {currentState.step}
+                    </span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${currentState.statusBg}`}>
+                      ● LIVE DIAGNOSTIC
+                    </span>
                   </div>
-                  <div className="w-12 h-1.5 bg-brand-600 rounded-full mb-3" />
-                  <p className="text-sm font-medium text-surface-700">Upload photo or video</p>
-                  <p className="text-xs text-surface-500 mt-1">We&apos;ll review & respond</p>
-                  <div className="mt-4 w-full h-1.5 bg-brand-200 rounded-full overflow-hidden">
-                    <div className="h-full w-2/3 bg-brand-600 rounded-full" />
+
+                  {/* Center Screen Animated Icon & Ticker */}
+                  <div className="my-auto text-center relative z-20 flex flex-col items-center">
+                    
+                    {/* Animated Pulsing Lens Circle */}
+                    <div className="relative mb-5">
+                      <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-teal-500 p-0.5 shadow-xl shadow-brand-500/30 animate-pulse">
+                        <div className="w-full h-full bg-slate-950 rounded-[22px] flex items-center justify-center">
+                          <StepIcon size={36} className="text-white animate-bounce" />
+                        </div>
+                      </div>
+                      <div className="absolute -inset-2 bg-brand-500/20 rounded-full blur-lg animate-ping opacity-30" />
+                    </div>
+
+                    <h3 className="text-lg font-extrabold text-white tracking-tight leading-tight">
+                      {currentState.title}
+                    </h3>
+                    
+                    <p className="text-xs text-brand-300 font-semibold mt-1">
+                      {currentState.subtitle}
+                    </p>
+
+                    <span className="mt-3 inline-block px-3 py-1 bg-white/10 backdrop-blur-md rounded-xl text-xs font-mono text-emerald-400 border border-white/15">
+                      {currentState.badge}
+                    </span>
+
+                    {/* Continuous Progress Bar Indicator */}
+                    <div className="mt-6 w-full h-2 bg-white/10 rounded-full overflow-hidden p-0.5 border border-white/10">
+                      <div
+                        className="h-full bg-gradient-to-r from-brand-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-700"
+                        style={{ width: currentState.progress }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bottom Security Note */}
+                  <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center relative z-20">
+                    <span className="text-[11px] font-bold text-surface-300 flex items-center justify-center gap-1.5">
+                      <ShieldCheck size={14} className="text-emerald-400" />
+                      100% Free Initial Problem Inspection
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Floating element */}
-              <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl px-4 py-3 border border-surface-200">
-                <div className="text-sm font-semibold text-surface-900">✓ Problem Identified</div>
-                <div className="text-xs text-surface-500">Assessment in progress</div>
+              {/* Floating Live Badge Overlays on Mobile Mockup */}
+              <div className="absolute -bottom-5 -left-6 bg-white rounded-2xl shadow-2xl p-4 border border-surface-200 z-30 animate-float max-w-[220px]">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+                  <span className="text-xs font-extrabold text-surface-900">Problem Identified</span>
+                </div>
+                <p className="text-[11px] text-surface-500 font-medium leading-tight">
+                  Water Pump Capacitor Replacement Needed
+                </p>
               </div>
+
+              <div className="absolute -top-4 -right-6 bg-surface-900 text-white rounded-2xl shadow-2xl px-4 py-3 border border-surface-700 z-30 animate-float-delayed">
+                <div className="flex items-center gap-2">
+                  <RefreshCw size={14} className="text-brand-400 animate-spin" />
+                  <span className="text-xs font-extrabold">Instant Technician Match</span>
+                </div>
+              </div>
+
             </div>
           </div>
+
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes scan {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
+        }
+        .animate-scan {
+          animation: scan 3s ease-in-out infinite alternate;
+        }
+      `}</style>
     </section>
   );
 }

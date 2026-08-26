@@ -30,7 +30,7 @@ export default async function ServicePage({ params }) {
   const serviceFAQs = [
     { q: `What ${service.name.toLowerCase()} services do you offer?`, a: `We offer a comprehensive range of ${service.name.toLowerCase()} services including: ${service.microServices.join(', ')}. If you need something specific, feel free to contact us.` },
     { q: 'How do I book this service?', a: 'Simply click the "Book This Service" button, tell us about your problem, upload photos if needed, choose your preferred time, and confirm. A verified professional will be assigned to your job.' },
-    { q: 'What are the estimated costs?', a: `Our ${service.name.toLowerCase()} services start from ${service.startingPrice}. The final price depends on the complexity of the work and materials required. You'll receive a clear quote before work begins.` },
+    { q: 'What are the estimated costs?', a: `You'll receive an upfront, clear estimate after describing the issue or during initial technician inspection before work begins.` },
     { q: 'How long does the service take?', a: 'Service duration varies depending on the specific job. Minor repairs may take 30-60 minutes, while larger projects can take several hours or multiple visits. Your professional will give you a time estimate after assessing the work.' },
   ];
 
@@ -71,8 +71,8 @@ export default async function ServicePage({ params }) {
                 <div className="flex items-center gap-3">
                   <Clock size={18} className="text-brand-600" />
                   <div>
-                    <p className="text-sm font-semibold text-surface-900">Starting Price</p>
-                    <p className="text-brand-600 font-bold">{service.startingPrice}</p>
+                    <p className="text-sm font-semibold text-surface-900">Service Status</p>
+                    <p className="text-emerald-600 font-bold text-sm">● Available for Booking</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

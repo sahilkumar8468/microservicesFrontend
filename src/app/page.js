@@ -1,5 +1,6 @@
 import { HeroSection } from '@/components/home/hero-section';
 import { TrustSection } from '@/components/home/trust-section';
+import { ServiceCoverageBanner } from '@/components/service-coverage-banner';
 import { ServicesSection } from '@/components/home/services-section';
 import { ServiceSearch } from '@/components/home/service-search';
 import { HowItWorksSection } from '@/components/home/how-it-works-section';
@@ -20,7 +21,6 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <TrustSection />
       <ServicesSection />
       <ServiceSearch />
       <HowItWorksSection />

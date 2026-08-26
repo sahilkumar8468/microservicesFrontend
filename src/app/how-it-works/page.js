@@ -3,6 +3,7 @@
 import { Wrench, FileText, Camera, MapPin, Calendar, CheckCircle, ArrowRight, Star, Shield, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { CTASection } from '@/components/cta-section';
+import { siteConfig } from '@/data/site-config';
 
 const steps = [
   {
@@ -172,7 +173,7 @@ export default function HowItWorksPage() {
         title="Ready to Get Started?"
         description="Book your first service in under 2 minutes. Your home deserves the best."
         primaryButton={{ label: 'Book Now', href: '/book', icon: 'Wrench' }}
-        secondaryButton={{ label: 'Call Us', href: 'tel:+923001234567', icon: 'Phone' }}
+        secondaryButton={{ label: 'Call Us', href: `tel:${siteConfig.contact.phone}`, icon: 'Phone' }}
       />
     </main>
   );

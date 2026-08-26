@@ -71,10 +71,10 @@ export default function ServicesPage() {
                       </div>
 
                       <div className="mt-4 flex items-center justify-between">
-                        <span className="text-sm text-surface-500">
-                          Starting from <span className="font-semibold text-surface-900">{service.startingPrice}</span>
+                        <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100">
+                          ● Verified Partner Service
                         </span>
-                        <span className={`text-sm font-medium ${service.textColor} flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity`}>
+                        <span className={`text-sm font-bold ${service.textColor} flex items-center gap-1 group-hover:translate-x-1 transition-transform`}>
                           View Services <ArrowRight size={14} />
                         </span>
                       </div>

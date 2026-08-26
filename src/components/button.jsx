@@ -1,17 +1,17 @@
 import Link from 'next/link';
 
 const variants = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm shadow-brand-600/20',
-  secondary: 'bg-surface-900 text-white hover:bg-surface-800 shadow-sm',
-  outline: 'border-2 border-surface-900 text-surface-900 hover:bg-surface-900 hover:text-white',
-  outlineLight: 'border-2 border-white text-white hover:bg-white hover:text-surface-900',
-  ghost: 'text-surface-600 hover:text-surface-900 hover:bg-surface-100',
+  primary: 'bg-gradient-to-r from-orange-500 via-amber-500 to-rose-600 hover:from-orange-600 hover:via-amber-600 hover:to-rose-700 text-white shadow-md shadow-orange-500/30 active:scale-[0.98]',
+  secondary: 'bg-surface-900 text-white hover:bg-slate-800 shadow-md active:scale-[0.98]',
+  outline: 'border border-surface-200 bg-white text-surface-900 hover:bg-surface-50 hover:border-orange-400 shadow-xs active:scale-[0.98]',
+  outlineLight: 'border border-white/30 bg-white/10 backdrop-blur-md text-white hover:bg-white/20 active:scale-[0.98]',
+  ghost: 'text-surface-600 hover:text-orange-600 hover:bg-orange-50/80 active:scale-[0.98]',
 };
 
 const sizes = {
-  sm: 'px-4 py-2 text-sm',
-  md: 'px-6 py-3 text-sm',
-  lg: 'px-8 py-4 text-base',
+  sm: 'px-4 py-2 text-xs font-bold rounded-xl',
+  md: 'px-6 py-3 text-sm font-extrabold rounded-xl',
+  lg: 'px-8 py-4 text-base font-extrabold rounded-2xl',
 };
 
 export function Button({

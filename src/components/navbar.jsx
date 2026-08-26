@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, Phone } from 'lucide-react';
 import { Button } from './button';
 import { LocationSelector } from './location-selector';
 import { siteConfig } from '@/data/site-config';
+import { useAuth } from '@/context/AuthContext';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -15,6 +17,8 @@ const navLinks = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
+  const { user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -40,44 +44,76 @@ export function Navbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-surface-200 py-3'
-            : 'bg-white py-4'
+            ? 'bg-white/85 backdrop-blur-xl shadow-md shadow-surface-900/5 border-b border-surface-200/80 py-3'
+            : 'bg-white/90 backdrop-blur-md py-4 border-b border-surface-100'
         }`}
       >
         <div className="container-wide flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-9 h-9 rounded-lg bg-brand-600 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">H</span>
+          <Link href="/" className="flex items-center gap-3 shrink-0 group">
+            <div className="relative w-11 h-11 rounded-xl bg-white border border-surface-200 overflow-hidden flex items-center justify-center p-0.5 shadow-sm group-hover:scale-105 transition-transform">
+              <img src="/logo.png" alt={siteConfig.name} className="w-full h-full object-contain" />
             </div>
-            <span className="font-bold text-xl text-surface-900 tracking-tight">
-              {siteConfig.name}
-            </span>
+            <div>
+              <span className="font-extrabold text-xl text-surface-900 tracking-tight block leading-none">
+                Universal<span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">Interior</span>
+              </span>
+              <span className="text-[10px] font-bold tracking-widest text-surface-400 uppercase block mt-1">
+                & Microservices
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-3 py-2 text-sm font-medium text-surface-600 hover:text-surface-900 rounded-lg hover:bg-surface-50 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden lg:flex items-center gap-1.5 bg-surface-50/80 p-1.5 rounded-2xl border border-surface-200/60 shadow-inner">
+            {navLinks.map((link) => {
+              const active = link.href === '/' ? pathname === '/' : pathname?.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-4 py-2 text-xs font-extrabold rounded-xl transition-all duration-200 ${
+                    active
+                      ? 'bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500 text-white shadow-md shadow-orange-500/25 scale-[1.02]'
+                      : 'text-surface-600 hover:text-brand-700 hover:bg-white hover:shadow-xs'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Desktop Right */}
           <div className="hidden lg:flex items-center gap-3">
             <LocationSelector variant="compact" />
-            <Link
-              href="/login"
-              className="text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors px-3 py-2"
-            >
-              Login
-            </Link>
-            <Button href="/book" size="sm">
+            {user ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/account"
+                  className="flex items-center gap-2 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200/80 transition-all px-4 py-2.5 rounded-xl shadow-xs"
+                >
+                  <div className="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center font-extrabold text-xs">
+                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <span>{user.name.split(' ')[0]}</span>
+                </Link>
+                <button
+                  onClick={logout}
+                  className="text-xs font-bold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all px-3 py-2.5 rounded-xl"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="text-xs font-bold text-surface-700 hover:text-brand-600 transition-colors px-3 py-2.5"
+              >
+                Sign In
+              </Link>
+            )}
+            <Button href="/book" size="sm" className="shadow-md shadow-brand-600/20 font-bold text-xs rounded-xl px-5 py-2.5">
               Book a Service
             </Button>
           </div>
@@ -87,10 +123,10 @@ export function Navbar() {
             <LocationSelector variant="compact" />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-lg hover:bg-surface-100 transition-colors"
+              className="p-2.5 rounded-xl bg-surface-50 border border-surface-200 hover:bg-surface-100 transition-colors text-surface-700"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
@@ -114,11 +150,11 @@ export function Navbar() {
           }`}
         >
           <div className="flex items-center justify-between p-4 border-b border-surface-100">
-            <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-              <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
-                <span className="text-white font-bold text-base">H</span>
+            <Link href="/" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
+              <div className="w-9 h-9 rounded-lg bg-white border border-surface-200 p-0.5 flex items-center justify-center overflow-hidden shrink-0">
+                <img src="/logo.png" alt={siteConfig.name} className="w-full h-full object-contain" />
               </div>
-              <span className="font-bold text-lg">{siteConfig.name}</span>
+              <span className="font-bold text-base">{siteConfig.name}</span>
             </Link>
             <button
               onClick={() => setMobileOpen(false)}
@@ -130,24 +166,52 @@ export function Navbar() {
           </div>
 
           <nav className="p-4 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className="block px-4 py-3 text-base font-medium text-surface-700 hover:text-surface-900 hover:bg-surface-50 rounded-xl transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const active = link.href === '/' ? pathname === '/' : pathname?.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block px-4 py-3 text-base font-extrabold rounded-xl transition-all duration-200 ${
+                    active
+                      ? 'bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500 text-white shadow-md'
+                      : 'text-surface-700 hover:text-surface-900 hover:bg-surface-50'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
             <hr className="my-3 border-surface-100" />
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-base font-medium text-surface-700 hover:bg-surface-50 rounded-xl transition-colors"
-            >
-              Login
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  href="/account"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-4 py-3 text-base font-semibold text-brand-700 bg-brand-50 rounded-xl transition-colors"
+                >
+                  Dashboard (My Account)
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    logout();
+                  }}
+                  className="w-full text-left block px-4 py-3 text-base font-medium text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
+                >
+                  Logout ({user.name})
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-surface-700 hover:bg-surface-50 rounded-xl transition-colors"
+              >
+                Login
+              </Link>
+            )}
             <div className="pt-3 px-2">
               <Button href="/book" className="w-full" size="lg">
                 Book a Service

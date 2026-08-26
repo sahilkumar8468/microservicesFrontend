@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle } from 'lucide-react';
 import { siteConfig } from '@/data/site-config';
 import { CTASection } from '@/components/cta-section';
+import { OfficeLocationMap } from '@/components/office-location-map';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', subject: '', message: '' });
@@ -26,42 +27,42 @@ export default function ContactPage() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-surface-50 via-surface-0 to-brand-50/20 pt-32 pb-20">
+      <section className="relative bg-gradient-to-br from-surface-50 via-surface-0 to-brand-50/20 pt-28 pb-12 sm:pt-36 sm:pb-20">
         <div className="absolute inset-0 bg-[url('/images/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-semibold text-brand-700 mb-6">
+          <span className="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-brand-700 mb-4 sm:mb-6">
             <MessageCircle className="h-4 w-4" />
             Get In Touch
           </span>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-surface-900 tracking-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-surface-900 tracking-tight">
             We'd Love to <span className="text-brand-600">Hear</span> From You
           </h1>
-          <p className="mt-4 text-lg text-surface-500 max-w-2xl mx-auto">
+          <p className="mt-3 sm:mt-4 text-base sm:text-lg text-surface-500 max-w-2xl mx-auto">
             Have a question, feedback, or need help? Reach out anytime — our team is here for you.
           </p>
         </div>
       </section>
 
       {/* Contact Grid */}
-      <section className="relative -mt-10 pb-20">
+      <section className="relative -mt-6 sm:-mt-10 pb-12 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
             {/* Contact Info Cards */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-3.5 sm:space-y-4">
               {contactInfo.map((item) => (
-                <div key={item.label} className="group bg-white rounded-2xl p-5 border border-surface-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-100/50 transition-all duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center group-hover:bg-brand-100 transition-colors">
+                <div key={item.label} className="group bg-white rounded-2xl p-4 sm:p-5 border border-surface-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-100/50 transition-all duration-300">
+                  <div className="flex items-start gap-3.5 sm:gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand-50 flex items-center justify-center group-hover:bg-brand-100 transition-colors">
                       <item.icon className="h-5 w-5 text-brand-600" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-surface-400">{item.label}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs sm:text-sm font-medium text-surface-400">{item.label}</p>
                       {item.href ? (
-                        <a href={item.href} className="text-surface-900 font-semibold hover:text-brand-600 transition-colors break-words">
+                        <a href={item.href} className="text-sm sm:text-base text-surface-900 font-semibold hover:text-brand-600 transition-colors break-all sm:break-words block">
                           {item.value}
                         </a>
                       ) : (
-                        <p className="text-surface-900 font-semibold">{item.value}</p>
+                        <p className="text-sm sm:text-base text-surface-900 font-semibold break-words">{item.value}</p>
                       )}
                     </div>
                   </div>
@@ -69,21 +70,27 @@ export default function ContactPage() {
               ))}
 
               {/* Social */}
-              <div className="bg-white rounded-2xl p-5 border border-surface-200">
-                <p className="text-sm font-medium text-surface-400 mb-4">Follow Us</p>
-                <div className="flex gap-3">
-                  <a href={siteConfig.social.facebook} className="w-11 h-11 rounded-xl bg-surface-100 flex items-center justify-center hover:bg-brand-100 hover:text-brand-600 transition-all" aria-label="Facebook">
+              <div className="bg-white rounded-2xl p-4 sm:p-5 border border-surface-200">
+                <p className="text-xs sm:text-sm font-medium text-surface-400 mb-3 sm:mb-4">Follow Us & Socials</p>
+                <div className="flex flex-wrap gap-2.5 sm:gap-3">
+                  <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-surface-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm" aria-label="Facebook">
                     <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                   </a>
-                  <a href={siteConfig.social.instagram} className="w-11 h-11 rounded-xl bg-surface-100 flex items-center justify-center hover:bg-brand-100 hover:text-brand-600 transition-all" aria-label="Instagram">
+                  <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-surface-100 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all shadow-sm" aria-label="Instagram">
                     <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                  </a>
+                  <a href={siteConfig.social.tiktok} target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-surface-100 flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm" aria-label="TikTok">
+                    <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 003 15.68 6.34 6.34 0 009.34 22a6.34 6.34 0 006.34-6.34V9.36a8.16 8.16 0 004.91 1.63V7.54a4.85 4.85 0 01-1-.85z"/></svg>
+                  </a>
+                  <a href={siteConfig.social.whatsapp} target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-surface-100 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm" aria-label="WhatsApp">
+                    <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.762.459 3.48 1.332 5.001L2 22l5.123-1.334a9.96 9.96 0 004.887 1.282h.004c5.505 0 9.989-4.478 9.99-9.985A9.948 9.948 0 0012.012 2zm.003 16.402h-.003a8.274 8.274 0 01-4.221-1.157l-.303-.18-3.136.818.835-3.048-.198-.314a8.272 8.272 0 01-1.272-4.47c.001-4.568 3.722-8.283 8.297-8.283a8.25 8.25 0 015.86 2.428 8.243 8.243 0 012.43 5.863c-.002 4.569-3.724 8.284-8.297 8.284zm4.545-6.208c-.249-.125-1.474-.727-1.703-.81-.229-.083-.395-.125-.561.125-.166.249-.644.81-.79 0.976-.145.166-.291.187-.54.062a6.837 6.837 0 01-2.008-1.238 7.55 7.55 0 01-1.388-1.73c-.146-.249-.016-.384.109-.508.113-.112.249-.291.374-.436.125-.145.166-.249.249-.415.083-.166.042-.312-.021-.436-.062-.125-.561-1.351-.769-1.85-.203-.487-.41-.421-.561-.428-.145-.007-.312-.007-.478-.007s-.436.062-.665.312c-.229.249-.873.852-.873 2.079 0 1.226.894 2.41 1.018 2.577.125.166 1.758 2.685 4.26 3.766.595.257 1.06.41 1.423.526.598.19 1.142.163 1.572.099.48-.071 1.474-.602 1.682-1.184.208-.582.208-1.08.145-1.184-.062-.104-.228-.166-.477-.291z"/></svg>
                   </a>
                 </div>
               </div>
             </div>
 
             {/* Contact Form */}
-            <div className="lg:col-span-3 bg-white rounded-2xl border border-surface-200 p-8 shadow-sm">
+            <div className="lg:col-span-3 bg-white rounded-2xl sm:rounded-3xl border border-surface-200 p-5 sm:p-8 shadow-sm">
               {submitted ? (
                 <div className="text-center py-12">
                   <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
@@ -178,16 +185,10 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Map Placeholder */}
+      {/* Real Interactive & Embedded Office Map */}
       <section className="pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl overflow-hidden border border-surface-200 h-80 bg-surface-100 flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="h-10 w-10 text-brand-400 mx-auto mb-3" />
-              <p className="text-surface-500 font-medium">Map will be embedded here</p>
-              <p className="text-sm text-surface-400 mt-1">{siteConfig.contact.address}</p>
-            </div>
-          </div>
+          <OfficeLocationMap />
         </div>
       </section>
 

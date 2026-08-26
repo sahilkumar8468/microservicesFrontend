@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, ArrowLeft, Check, Camera, MapPin, Calendar, FileText, Wrench, Phone, Mail, CheckCircle2, Send, RefreshCw } from 'lucide-react';
 import { BookingStepper } from '@/components/booking-stepper';
 import { Button } from '@/components/button';
@@ -10,8 +10,10 @@ import { services, serviceIcons } from '@/data/services';
 import { bookingSteps, problemTypes, timeSlots } from '@/data/booking';
 import { locations } from '@/data/locations';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 export default function BookPage() {
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [booking, setBooking] = useState({
     serviceId: null,
@@ -25,9 +27,20 @@ export default function BookPage() {
     phone: '',
     email: '',
   });
+
+  useEffect(() => {
+    if (user) {
+      setBooking((prev) => ({
+        ...prev,
+        email: user.email || '',
+        phone: user.phone || '',
+      }));
+    }
+  }, [user]);
   const [submitted, setSubmitted] = useState(false);
   const [emailResent, setEmailResent] = useState(false);
   const [bookingId, setBookingId] = useState('');
+  const [createdOtp, setCreatedOtp] = useState('');
 
   const selectedService = services.find((s) => s.id === booking.serviceId);
   const problems = booking.serviceId ? problemTypes[booking.serviceId] || [] : [];
@@ -56,11 +69,54 @@ export default function BookPage() {
     }
   }
 
-  function handleSubmit() {
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  async function handleSubmit() {
     if (!booking.phone || booking.phone.trim().length < 10) return;
-    const randomId = 'BK-2026-' + Math.floor(1000 + Math.random() * 9000);
-    setBookingId(randomId);
-    setSubmitted(true);
+    try {
+      let photoDataUrls = [];
+      if (Array.isArray(booking.photos) && booking.photos.length > 0) {
+        photoDataUrls = await Promise.all(
+          booking.photos.map(p => p instanceof File ? fileToBase64(p) : Promise.resolve(p))
+        );
+      }
+
+      const res = await fetch('http://localhost:5000/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          serviceId: booking.serviceId,
+          serviceName: selectedService?.name,
+          problem: booking.problem,
+          description: booking.description,
+          photos: photoDataUrls,
+          date: booking.date,
+          time: booking.time,
+          locationId: booking.locationId,
+          phone: booking.phone,
+          email: booking.email || user?.email || 'customer@example.com'
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setBookingId(data.id);
+        setCreatedOtp(data.otpCode || '');
+        setSubmitted(true);
+      } else {
+        alert('Failed to submit booking. Server returned an error.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Could not connect to backend server. Booking not submitted.');
+    }
   }
 
   function handleResendConfirmation() {
@@ -68,8 +124,43 @@ export default function BookPage() {
     setTimeout(() => setEmailResent(false), 4000);
   }
 
+  // Mandatory Login / Profile Requirement Check
+  if (!user) {
+    return (
+      <div className="min-h-screen pt-28 pb-16 bg-surface-50 flex items-center justify-center p-4">
+        <div className="bg-white border border-surface-200 rounded-3xl p-8 sm:p-10 shadow-xl max-w-md w-full text-center">
+          <div className="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-200 text-brand-600 flex items-center justify-center mx-auto mb-5 shadow-sm">
+            <Mail className="h-8 w-8" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-surface-900 tracking-tight">Account & Profile Required</h1>
+          <p className="text-surface-500 text-sm mt-2 font-medium">
+            To ensure booking security and partner verification, please log in or create a customer profile first.
+          </p>
+
+          <div className="space-y-3 mt-8">
+            <Link
+              href="/login?redirect=/book"
+              className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm tracking-wide transition-all shadow-md shadow-brand-600/20 flex items-center justify-center gap-2"
+            >
+              Sign In to Complete Profile
+            </Link>
+            <Link
+              href="/login?redirect=/book"
+              className="w-full py-3.5 rounded-xl border border-surface-200 bg-white hover:bg-surface-50 text-surface-700 font-bold text-sm transition-all flex items-center justify-center gap-2"
+            >
+              Create New Account
+            </Link>
+          </div>
+          <p className="text-xs text-surface-400 mt-6">
+            Google SSO and Email Auth supported for instant verification.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (submitted) {
-    const customerEmail = booking.email.trim() || 'customer@example.com';
+    const customerEmail = booking.email.trim() || user?.email || 'customer@example.com';
 
     return (
       <div className="min-h-screen pt-24 pb-16 bg-surface-50 flex items-center justify-center">
@@ -89,8 +180,27 @@ export default function BookPage() {
               </p>
             </div>
 
-            {/* Confirmation Email Badge */}
+            {/* OTP Security Verification Badge */}
             <div className="p-6 space-y-6">
+              {createdOtp && (
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-amber-600 text-white font-extrabold text-lg flex items-center justify-center shrink-0">
+                    🔑
+                  </div>
+                  <div>
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-amber-800">
+                      Microservice Partner Verification OTP
+                    </span>
+                    <p className="text-2xl font-extrabold font-mono text-amber-900 tracking-widest my-0.5">
+                      {createdOtp}
+                    </p>
+                    <p className="text-xs text-amber-700 font-medium">
+                      Provide this OTP code to your assigned technician upon arrival to verify partner identity.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="p-4 rounded-2xl bg-brand-50 border border-brand-200 flex items-start gap-3">
                 <Mail className="h-6 w-6 text-brand-600 shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
@@ -104,9 +214,6 @@ export default function BookPage() {
                   </div>
                   <p className="text-sm text-surface-800 font-medium mt-1 truncate">
                     A confirmation receipt has been sent to <strong>{customerEmail}</strong>.
-                  </p>
-                  <p className="text-xs text-surface-500 mt-1">
-                    SMS notification will also be sent to <strong>{booking.phone}</strong>.
                   </p>
                 </div>
               </div>
@@ -132,42 +239,20 @@ export default function BookPage() {
                     </strong>
                   </div>
                   <div>
-                    <span className="text-xs text-surface-400 block">Location Area</span>
-                    <strong className="text-surface-900">
-                      {locations.find((l) => l.id === booking.locationId)?.name}
-                    </strong>
-                  </div>
-                  <div>
                     <span className="text-xs text-surface-400 block">Contact Phone</span>
                     <strong className="text-surface-900">{booking.phone}</strong>
-                  </div>
-                  <div>
-                    <span className="text-xs text-surface-400 block">Payment Method</span>
-                    <strong className="text-emerald-700">Cash on Completion</strong>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={handleResendConfirmation}
-                    className="text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1.5"
-                  >
-                    <Send size={13} />
-                    {emailResent ? '✓ Email Resent to ' + customerEmail : 'Resend Confirmation Email'}
-                  </button>
-                  <span className="text-xs text-surface-400">Ref: {bookingId}</span>
-                </div>
-
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <Button href="/" variant="primary" className="flex-1 justify-center">
                     Back to Home
                   </Button>
-                  <Button href="/account/bookings" variant="outline" className="flex-1 justify-center">
-                    View My Bookings
+                  <Button href={`/account/bookings/${bookingId}`} variant="outline" className="flex-1 justify-center">
+                    Track Live Booking Progress
                   </Button>
                 </div>
               </div>

@@ -1,11 +1,31 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { SectionHeading } from '@/components/section-heading';
 import { ServiceCard } from '@/components/service-card';
-import { services } from '@/data/services';
+import { getAllServices } from '@/data/services';
 import { useScrollAnimation } from '@/hooks/use-scroll-animation';
 
 export function ServicesSection() {
   const { ref, isVisible } = useScrollAnimation();
+  const [allServices, setAllServices] = useState(getAllServices([]));
+
+  const API_URL = 'http://localhost:5000/api';
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const res = await fetch(`${API_URL}/services`);
+      if (res.ok) {
+        const customData = await res.json();
+        setAllServices(getAllServices(customData));
+      }
+    } catch (e) {
+      console.error('Failed to fetch services:', e);
+    }
+  };
 
   return (
     <section ref={ref} className="py-20 md:py-28 bg-white">
@@ -21,7 +41,7 @@ export function ServicesSection() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          {services.map((service) => (
+          {allServices.map((service) => (
             <ServiceCard key={service.id} service={service} variant="featured" />
           ))}
         </div>

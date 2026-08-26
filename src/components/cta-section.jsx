@@ -10,37 +10,36 @@ export function CTASection({
   secondaryLabel = 'Contact Us',
   variant = 'dark',
 }) {
-  const isDark = variant === 'dark';
-  const isBrand = variant === 'brand';
-
   return (
-    <section className={`relative overflow-hidden ${isDark ? 'bg-surface-900' : isBrand ? 'bg-brand-600' : 'bg-surface-50'}`}>
-      {/* Background decorative elements */}
-      <div className="absolute inset-0">
-        <div className={`absolute inset-0 ${isDark ? 'bg-[radial-gradient(circle_at_30%_50%,rgba(37,99,235,0.15),transparent_50%)]' : isBrand ? 'bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent_70%)]' : ''}`} />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-      </div>
+    <section className="relative overflow-hidden bg-gradient-to-r from-slate-950 via-amber-950 to-orange-950 text-white py-24 md:py-32 border-t border-orange-500/20">
+      {/* Animated glowing ambient orbs */}
+      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-orange-600/20 rounded-full blur-[140px] animate-glow-pulse pointer-events-none" />
+      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-amber-600/20 rounded-full blur-[140px] animate-glow-pulse pointer-events-none" />
 
-      <div className="container-wide relative py-20 md:py-28 text-center">
-        <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance ${isDark || isBrand ? 'text-white' : 'text-surface-900'}`}>
+      {/* Animated glowing border line */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-amber-400 to-rose-500 animate-gradient-x" />
+
+      <div className="container-wide relative z-10 text-center">
+        <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-balance leading-tight">
           {title}
         </h2>
-        <p className={`mt-4 text-lg max-w-xl mx-auto text-balance ${isDark ? 'text-surface-400' : isBrand ? 'text-white/80' : 'text-surface-500'}`}>
+        <p className="mt-4 text-base md:text-xl text-surface-300 max-w-xl mx-auto text-balance font-medium leading-relaxed">
           {description}
         </p>
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             href={primaryHref}
             size="lg"
-            variant={isDark || isBrand ? 'outlineLight' : 'primary'}
+            variant="primary"
+            className="shadow-xl shadow-brand-600/30 px-9 font-extrabold text-base"
           >
             {primaryLabel}
           </Button>
           <Button
             href={secondaryHref}
             size="lg"
-            variant={isDark ? 'ghost' : isBrand ? 'outlineLight' : 'outline'}
-            className={isDark ? 'text-white/80 hover:text-white hover:bg-white/10' : ''}
+            variant="outlineLight"
+            className="px-9 font-extrabold text-base"
           >
             {secondaryLabel}
           </Button>

@@ -7,6 +7,7 @@ export const services = [
     id: 'plumbing',
     name: 'Plumbing',
     icon: 'Wrench',
+    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
     description: 'Expert plumbing repairs, installations, and maintenance for your home.',
     shortDesc: 'Tap repair, pipe leakage, drain blockage, sink repair, toilet repair, shower installation.',
     color: 'from-blue-500 to-blue-700',
@@ -30,6 +31,7 @@ export const services = [
     id: 'electrical',
     name: 'Electrical',
     icon: 'Zap',
+    image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80',
     description: 'Safe and reliable electrical services by certified professionals.',
     shortDesc: 'Wiring, switchboard repair, fan installation, lighting, power issues.',
     color: 'from-amber-500 to-amber-700',
@@ -53,6 +55,7 @@ export const services = [
     id: 'ac-repair',
     name: 'AC Repair',
     icon: 'Wind',
+    image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80',
     description: 'Keep your home cool with professional AC maintenance and repair.',
     shortDesc: 'AC not cooling, gas refill, deep cleaning, installation, annual maintenance.',
     color: 'from-cyan-500 to-cyan-700',
@@ -76,6 +79,7 @@ export const services = [
     id: 'carpenter',
     name: 'Carpenter',
     icon: 'Hammer',
+    image: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80',
     description: 'Skilled carpentry for furniture repair, custom builds, and installations.',
     shortDesc: 'Door repair, cabinet fixing, custom shelving, furniture assembly.',
     color: 'from-orange-500 to-orange-700',
@@ -99,6 +103,7 @@ export const services = [
     id: 'handyman',
     name: 'Handyman',
     icon: 'Brush',
+    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
     description: 'Versatile handyman for general home repairs and small fixes around the house.',
     shortDesc: 'Furniture assembly, curtain installation, picture hanging, minor repairs.',
     color: 'from-emerald-500 to-emerald-700',
@@ -122,6 +127,7 @@ export const services = [
     id: 'water-tank-cleaning',
     name: 'Water Tank Cleaning',
     icon: 'Droplets',
+    image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80',
     description: 'Professional water tank cleaning for safe and clean water at home.',
     shortDesc: 'Underground tank cleaning, overhead tank cleaning, disinfection.',
     color: 'from-sky-500 to-sky-700',
@@ -143,6 +149,7 @@ export const services = [
     id: 'home-decoration',
     name: 'Home Decoration',
     icon: 'PaintBucket',
+    image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80',
     description: 'Transform your living spaces with professional home decoration services.',
     shortDesc: 'Living room, bedroom, TV wall, wallpaper, lighting, custom decor projects.',
     color: 'from-purple-500 to-purple-700',
@@ -166,6 +173,7 @@ export const services = [
     id: 'furniture-transformation',
     name: 'Furniture Transformation',
     icon: 'Sofa',
+    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
     description: 'Give your old furniture a completely new life with professional restoration.',
     shortDesc: 'Sofa restoration, wardrobe redesign, table refinishing, cabinet transformation.',
     color: 'from-rose-500 to-rose-700',
@@ -191,17 +199,38 @@ export const serviceIcons = {
   Wrench, Zap, Wind, Hammer, Brush, Droplets, PaintBucket, Sofa,
 };
 
-export function getServiceById(id) {
-  return services.find((s) => s.id === id) || null;
+export function getAllServices(customServices = []) {
+  if (!Array.isArray(customServices) || customServices.length === 0) {
+    return services;
+  }
+  const customMap = new Map();
+  services.forEach(s => customMap.set(s.id, s));
+  customServices.forEach(cs => {
+    if (cs && cs.id) {
+      customMap.set(cs.id, {
+        ...cs,
+        bgColor: cs.bgColor || 'bg-orange-50',
+        textColor: cs.textColor || 'text-orange-700',
+        borderColor: cs.borderColor || 'border-orange-200'
+      });
+    }
+  });
+  return Array.from(customMap.values());
 }
 
-export function searchServices(query) {
+export function getServiceById(id, customServices = []) {
+  const all = getAllServices(customServices);
+  return all.find((s) => s.id === id) || null;
+}
+
+export function searchServices(query, customServices = []) {
   if (!query || query.length < 2) return [];
   const q = query.toLowerCase();
-  return services.filter((s) => {
+  const all = getAllServices(customServices);
+  return all.filter((s) => {
     const nameMatch = s.name.toLowerCase().includes(q);
-    const descMatch = s.shortDesc.toLowerCase().includes(q);
-    const keywordMatch = s.searchKeywords.some((k) => k.includes(q));
+    const descMatch = (s.shortDesc || s.description || '').toLowerCase().includes(q);
+    const keywordMatch = (s.searchKeywords || []).some((k) => k.toLowerCase().includes(q));
     return nameMatch || descMatch || keywordMatch;
   });
 }
