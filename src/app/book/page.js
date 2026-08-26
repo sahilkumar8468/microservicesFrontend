@@ -14,6 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function BookPage() {
   const { user } = useAuth();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://micro-services-backend.vercel.app/api';
   const [step, setStep] = useState(0);
   const [booking, setBooking] = useState({
     serviceId: null,
@@ -88,7 +89,7 @@ export default function BookPage() {
         );
       }
 
-      const res = await fetch('http://localhost:5000/api/bookings', {
+      const res = await fetch(`${API_URL}/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

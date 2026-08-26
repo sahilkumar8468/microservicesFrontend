@@ -158,13 +158,9 @@ export default function AccountPage() {
                 <Link
                   href="/admin"
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-all"
-                >
+                />
                   <ShieldCheck className="h-4 w-4 text-brand-600" />
                   Admin Panel &rarr;
-                </Link>
-                <p className="text-[10px] text-surface-400 mt-1 text-center font-medium">
-                  Login credentials: <strong>admin</strong> / <strong>admin1</strong>
-                </p>
               </div>
 
               {/* Sign Out */}

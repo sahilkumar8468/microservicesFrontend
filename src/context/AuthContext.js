@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
   const isRefreshingRef = useRef(false);
   const pendingRequestsQueueRef = useRef([]);
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://micro-services-backend.vercel.app/api';
 
   useEffect(() => {
     // Check if tokens exist in localStorage on startup

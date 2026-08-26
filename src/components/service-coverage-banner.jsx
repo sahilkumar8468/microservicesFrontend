@@ -11,7 +11,7 @@ export function ServiceCoverageBanner() {
   const [checkResult, setCheckResult] = useState(null);
   const [showMapModal, setShowMapModal] = useState(false);
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://micro-services-backend.vercel.app/api';
 
   useEffect(() => {
     fetchConfig();
