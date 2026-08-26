@@ -70,7 +70,7 @@ export function Navbar() {
               const active = link.href === '/' ? pathname === '/' : pathname?.startsWith(link.href);
               return (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
                   className={`px-4 py-2 text-xs font-extrabold rounded-xl transition-all duration-200 ${
                     active
@@ -170,7 +170,7 @@ export function Navbar() {
               const active = link.href === '/' ? pathname === '/' : pathname?.startsWith(link.href);
               return (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
                   className={`block px-4 py-3 text-base font-extrabold rounded-xl transition-all duration-200 ${

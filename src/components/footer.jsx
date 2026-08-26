@@ -99,7 +99,7 @@ export function Footer() {
             <h4 className="font-extrabold text-white text-sm uppercase tracking-wider mb-5">Microservices</h4>
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
-                <li key={link.href}>
+                <li key={link.label}>
                   <Link href={link.href} className="text-xs font-semibold text-surface-400 hover:text-brand-400 transition-colors">
                     {link.label}
                   </Link>
@@ -113,7 +113,7 @@ export function Footer() {
             <h4 className="font-extrabold text-white text-sm uppercase tracking-wider mb-5">Company</h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
-                <li key={link.href}>
+                <li key={link.label}>
                   <Link href={link.href} className="text-xs font-semibold text-surface-400 hover:text-brand-400 transition-colors">
                     {link.label}
                   </Link>
@@ -127,7 +127,7 @@ export function Footer() {
             <h4 className="font-extrabold text-white text-sm uppercase tracking-wider mb-5">Support & Trust</h4>
             <ul className="space-y-3">
               {footerLinks.support.map((link) => (
-                <li key={link.href}>
+                <li key={link.label}>
                   <Link href={link.href} className="text-xs font-semibold text-surface-400 hover:text-brand-400 transition-colors">
                     {link.label}
                   </Link>
