@@ -18,7 +18,7 @@ export function TestimonialCarousel({ testimonials }) {
 
   return (
     <div className="relative max-w-3xl mx-auto">
-      <div className="bg-white rounded-2xl border border-surface-200 p-8 md:p-10 shadow-sm">
+      <div className="bg-white rounded-2xl border border-surface-200 p-5 sm:p-8 md:p-10 shadow-sm">
         <div className="flex gap-1 mb-4">
           {[...Array(5)].map((_, i) => (
             <Star
@@ -28,7 +28,7 @@ export function TestimonialCarousel({ testimonials }) {
             />
           ))}
         </div>
-        <blockquote className="text-lg md:text-xl text-surface-700 leading-relaxed mb-6">
+        <blockquote className="text-base sm:text-lg md:text-xl text-surface-700 leading-relaxed mb-6">
           &ldquo;{t.text}&rdquo;
         </blockquote>
         <div className="flex items-center gap-3">

@@ -41,52 +41,52 @@ export default async function ServicePage({ params }) {
   return (
     <>
       {/* Hero */}
-      <section className="pt-24 pb-12 md:pt-32 md:pb-16 bg-gradient-to-b from-surface-50 to-white">
+      <section className="pt-20 pb-10 sm:pt-28 sm:pb-12 md:pt-32 md:pb-16 bg-gradient-to-b from-surface-50 to-white">
         <div className="container-wide">
-          <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
-            <div className="flex-1">
-              <div className={`w-16 h-16 rounded-2xl ${service.bgColor} flex items-center justify-center mb-6`}>
-                <Icon size={32} className={service.textColor} />
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center lg:items-start">
+            <div className="flex-1 w-full flex flex-col items-center text-center lg:items-start lg:text-left">
+              <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl ${service.bgColor} flex items-center justify-center mb-4 sm:mb-6 mx-auto lg:mx-0`}>
+                <Icon className={`h-6 w-6 sm:h-8 sm:w-8 ${service.textColor}`} />
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-surface-900">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-surface-900 text-balance text-center lg:text-left">
                 {service.name} Services in Karachi
               </h1>
-              <p className="mt-4 text-lg text-surface-500 max-w-2xl leading-relaxed">
+              <p className="mt-3 sm:mt-4 text-sm sm:text-lg text-surface-500 max-w-2xl leading-relaxed text-center lg:text-left mx-auto lg:mx-0">
                 {service.description}
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button href="/book" size="lg">
+              <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center lg:justify-start">
+                <Button href="/book" size="lg" className="w-full sm:w-auto justify-center">
                   Book This Service
                   <ArrowRight size={18} />
                 </Button>
-                <Button href="/contact" variant="outline" size="lg">
+                <Button href="/contact" variant="outline" size="lg" className="w-full sm:w-auto justify-center">
                   Ask a Question
                 </Button>
               </div>
             </div>
 
             {/* Quick info card */}
-            <div className="lg:w-80 shrink-0 bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
-              <div className="space-y-4">
+            <div className="w-full lg:w-80 shrink-0 bg-white rounded-2xl border border-surface-200 shadow-sm p-4 sm:p-6">
+              <div className="space-y-3.5 sm:space-y-4">
                 <div className="flex items-center gap-3">
-                  <Clock size={18} className="text-brand-600" />
+                  <Clock size={18} className="text-brand-600 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-surface-900">Service Status</p>
-                    <p className="text-emerald-600 font-bold text-sm">● Available for Booking</p>
+                    <p className="text-xs sm:text-sm font-semibold text-surface-900">Service Status</p>
+                    <p className="text-emerald-600 font-bold text-xs sm:text-sm">● Available for Booking</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MapPin size={18} className="text-brand-600" />
+                  <MapPin size={18} className="text-brand-600 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-surface-900">Available In</p>
-                    <p className="text-surface-600 text-sm">Multiple areas in Karachi</p>
+                    <p className="text-xs sm:text-sm font-semibold text-surface-900">Available In</p>
+                    <p className="text-surface-600 text-xs sm:text-sm">Multiple areas in Karachi</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Star size={18} className="text-amber-500" />
+                  <Star size={18} className="text-amber-500 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-surface-900">Rating</p>
-                    <p className="text-surface-600 text-sm">4.8/5 from customers</p>
+                    <p className="text-xs sm:text-sm font-semibold text-surface-900">Rating</p>
+                    <p className="text-surface-600 text-xs sm:text-sm">4.8/5 from customers</p>
                   </div>
                 </div>
               </div>
@@ -98,8 +98,8 @@ export default async function ServicePage({ params }) {
       {/* What we can help with */}
       <section className="py-16 md:py-20 bg-white">
         <div className="container-wide">
-          <div className="max-w-4xl">
-            <h2 className="text-2xl md:text-3xl font-bold text-surface-900 mb-8">What We Can Help With</h2>
+          <div className="max-w-4xl mx-auto lg:mx-0">
+            <h2 className="text-2xl md:text-3xl font-bold text-surface-900 mb-6 sm:mb-8 text-center sm:text-left">What We Can Help With</h2>
             <div className="grid sm:grid-cols-2 gap-3">
               {service.microServices.map((ms) => (
                 <div key={ms} className="flex items-center gap-3 p-4 rounded-xl bg-surface-50 border border-surface-100 hover:border-brand-200 transition-colors">

@@ -49,10 +49,10 @@ export function WhyChooseUsSection() {
           {features.map((feature, i) => (
             <div
               key={feature.title}
-              className="group relative p-6 rounded-2xl border border-surface-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-100/30 transition-all duration-300"
+              className="group relative p-6 rounded-2xl border border-surface-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-100/30 transition-all duration-300 text-center sm:text-left"
               style={{ transitionDelay: `${i * 100}ms` }}
             >
-              <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mb-5 group-hover:bg-brand-100 group-hover:scale-110 transition-all duration-300">
+              <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mb-5 group-hover:bg-brand-100 group-hover:scale-110 transition-all duration-300 mx-auto sm:mx-0">
                 <feature.icon size={26} className="text-brand-600" />
               </div>
               <h3 className="text-lg font-bold text-surface-900 mb-2">{feature.title}</h3>

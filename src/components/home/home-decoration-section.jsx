@@ -18,19 +18,19 @@ export function HomeDecorationSection() {
   return (
     <section ref={ref} className="py-20 md:py-28 bg-white">
       <div className="container-wide">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-          <div>
-            <span className="text-sm font-semibold tracking-wider uppercase text-purple-600 mb-3 block">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 items-center text-center md:items-start md:text-left">
+          <div className="flex flex-col items-center text-center md:items-start md:text-left">
+            <span className="text-sm font-semibold tracking-wider uppercase text-purple-600 mb-3 block mx-auto md:mx-0">
               Home Decoration
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-surface-900">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-surface-900 text-center md:text-left">
               Give Your Home a New Look.
             </h2>
-            <p className="mt-3 text-lg text-surface-500 max-w-xl">
+            <p className="mt-3 text-lg text-surface-500 max-w-xl text-center md:text-left mx-auto md:mx-0">
               Professional decoration services to refresh and elevate every room in your home.
             </p>
           </div>
-          <Button href="/services/home-decoration" variant="outline" className="shrink-0">
+          <Button href="/services/home-decoration" variant="outline" className="shrink-0 w-full sm:w-auto justify-center">
             Explore Home Decoration
             <ArrowRight size={16} />
           </Button>

@@ -17,20 +17,20 @@ export function FurnitureTransformSection() {
           </div>
 
           {/* Right content */}
-          <div className={`transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <span className="text-sm font-semibold tracking-wider uppercase text-rose-600 mb-3 block">
+          <div className={`flex flex-col items-center text-center lg:items-start lg:text-left transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <span className="text-sm font-semibold tracking-wider uppercase text-rose-600 mb-3 block text-center lg:text-left mx-auto lg:mx-0">
               Featured Service
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-surface-900 text-balance leading-[1.15]">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-surface-900 text-balance leading-[1.15] text-center lg:text-left">
               Don&apos;t Replace It.
               <br />
               <span className="text-rose-600">Transform It.</span>
             </h2>
-            <p className="mt-4 text-lg text-surface-500 max-w-lg leading-relaxed">
+            <p className="mt-4 text-lg text-surface-500 max-w-lg leading-relaxed text-center lg:text-left mx-auto lg:mx-0">
               Give your old furniture a completely new life. Our skilled craftsmen restore, redesign, and transform your beloved pieces into something beautiful.
             </p>
 
-            <div className="mt-8 grid grid-cols-2 gap-3">
+            <div className="mt-8 grid grid-cols-2 gap-3 w-full text-left">
               {[
                 'Sofa Upholstery',
                 'Wardrobe Redesign',
@@ -46,8 +46,8 @@ export function FurnitureTransformSection() {
               ))}
             </div>
 
-            <div className="mt-8">
-              <Button href="/services/furniture-transformation" size="lg">
+            <div className="mt-8 w-full flex justify-center lg:justify-start">
+              <Button href="/services/furniture-transformation" size="lg" className="w-full sm:w-auto justify-center">
                 Transform My Furniture
                 <ArrowRight size={18} />
               </Button>

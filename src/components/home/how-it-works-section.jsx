@@ -52,12 +52,12 @@ export function HowItWorksSection() {
           }`}
         >
           {steps.map((step, i) => (
-            <div key={step.number} className="relative group">
-              <div className="text-6xl font-bold text-surface-100 mb-[-2rem] ml-[-0.25rem] select-none">
+            <div key={step.number} className="relative group text-center sm:text-left">
+              <div className="text-6xl font-bold text-surface-100 mb-[-2rem] ml-0 sm:ml-[-0.25rem] select-none text-center sm:text-left">
                 {step.number}
               </div>
               <div className="relative z-10">
-                <div className={`w-14 h-14 rounded-2xl ${step.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`w-14 h-14 rounded-2xl ${step.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 mx-auto sm:mx-0`}>
                   <step.icon size={26} />
                 </div>
                 <h3 className="text-xl font-bold text-surface-900 mb-2">{step.title}</h3>

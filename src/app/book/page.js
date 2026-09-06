@@ -164,35 +164,36 @@ export default function BookPage() {
     const customerEmail = booking.email.trim() || user?.email || 'customer@example.com';
 
     return (
-      <div className="min-h-screen pt-24 pb-16 bg-surface-50 flex items-center justify-center">
-        <div className="container-narrow px-4">
+      <div className="min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 bg-surface-50 flex items-center justify-center">
+        <div className="container-narrow px-3.5 sm:px-6">
           <div className="bg-white rounded-3xl border border-surface-200 shadow-xl overflow-hidden max-w-xl mx-auto">
             {/* Header Banner */}
-            <div className="bg-gradient-to-r from-emerald-600 to-brand-600 p-8 text-white text-center relative overflow-hidden">
-              <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-4 border border-white/30 shadow-lg">
-                <CheckCircle2 size={44} className="text-white" />
+            <div className="bg-gradient-to-r from-emerald-600 to-brand-600 p-6 sm:p-8 text-white text-center relative overflow-hidden">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-3 sm:mb-4 border border-white/30 shadow-lg">
+                <CheckCircle2 size={36} className="text-white sm:hidden" />
+                <CheckCircle2 size={44} className="text-white hidden sm:block" />
               </div>
-              <span className="inline-block px-3 py-1 bg-white/20 text-xs font-semibold rounded-full uppercase tracking-wider mb-2">
+              <span className="inline-block px-3 py-1 bg-white/20 text-xs font-semibold rounded-full uppercase tracking-wider mb-2 break-all">
                 Booking #{bookingId}
               </span>
-              <h1 className="text-2xl md:text-3xl font-bold">Service Booked Successfully!</h1>
-              <p className="text-emerald-100 text-sm mt-1">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Service Booked Successfully!</h1>
+              <p className="text-emerald-100 text-xs sm:text-sm mt-1">
                 Your request has been dispatched to our nearest professional team.
               </p>
             </div>
 
             {/* OTP Security Verification Badge */}
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               {createdOtp && (
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3 shadow-sm">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3 shadow-sm">
                   <div className="w-10 h-10 rounded-xl bg-amber-600 text-white font-extrabold text-lg flex items-center justify-center shrink-0">
                     🔑
                   </div>
-                  <div>
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-amber-800">
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-amber-800 block">
                       Microservice Partner Verification OTP
                     </span>
-                    <p className="text-2xl font-extrabold font-mono text-amber-900 tracking-widest my-0.5">
+                    <p className="text-xl sm:text-2xl font-extrabold font-mono text-amber-900 tracking-widest my-0.5">
                       {createdOtp}
                     </p>
                     <p className="text-xs text-amber-700 font-medium">
@@ -202,29 +203,29 @@ export default function BookPage() {
                 </div>
               )}
 
-              <div className="p-4 rounded-2xl bg-brand-50 border border-brand-200 flex items-start gap-3">
-                <Mail className="h-6 w-6 text-brand-600 shrink-0 mt-0.5" />
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-brand-50 border border-brand-200 flex items-start gap-3">
+                <Mail className="h-5 w-5 sm:h-6 sm:w-6 text-brand-600 shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <span className="text-xs font-bold uppercase tracking-wider text-brand-800">
                       Confirmation Email Sent
                     </span>
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
+                    <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
                       <Check size={12} /> Delivered
                     </span>
                   </div>
-                  <p className="text-sm text-surface-800 font-medium mt-1 truncate">
-                    A confirmation receipt has been sent to <strong>{customerEmail}</strong>.
+                  <p className="text-xs sm:text-sm text-surface-800 font-medium mt-1 break-words">
+                    A confirmation receipt has been sent to <strong className="break-all">{customerEmail}</strong>.
                   </p>
                 </div>
               </div>
 
               {/* Booking Summary */}
-              <div className="bg-surface-50 rounded-2xl p-5 border border-surface-200 space-y-3">
-                <h3 className="text-sm font-bold text-surface-900 uppercase tracking-wider">
+              <div className="bg-surface-50 rounded-2xl p-4 sm:p-5 border border-surface-200 space-y-3">
+                <h3 className="text-xs sm:text-sm font-bold text-surface-900 uppercase tracking-wider">
                   Booking Reference & Details
                 </h3>
-                <div className="grid grid-cols-2 gap-3 text-sm pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-1">
                   <div>
                     <span className="text-xs text-surface-400 block">Service Name</span>
                     <strong className="text-surface-900">{selectedService?.name}</strong>
@@ -241,7 +242,7 @@ export default function BookPage() {
                   </div>
                   <div>
                     <span className="text-xs text-surface-400 block">Contact Phone</span>
-                    <strong className="text-surface-900">{booking.phone}</strong>
+                    <strong className="text-surface-900 break-all">{booking.phone}</strong>
                   </div>
                 </div>
               </div>
@@ -249,10 +250,10 @@ export default function BookPage() {
               {/* Action Buttons */}
               <div className="space-y-3 pt-2">
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <Button href="/" variant="primary" className="flex-1 justify-center">
+                  <Button href="/" variant="primary" className="w-full sm:flex-1 justify-center">
                     Back to Home
                   </Button>
-                  <Button href={`/account/bookings/${bookingId}`} variant="outline" className="flex-1 justify-center">
+                  <Button href={`/account/bookings/${bookingId}`} variant="outline" className="w-full sm:flex-1 justify-center text-center">
                     Track Live Booking Progress
                   </Button>
                 </div>
@@ -265,16 +266,16 @@ export default function BookPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16 bg-surface-50">
-      <div className="container-narrow">
-        <div className="mb-10">
-          <h1 className="text-2xl md:text-3xl font-bold text-surface-900 text-center mb-2">Book a Service</h1>
-          <p className="text-surface-500 text-center">Complete the steps below to request a service.</p>
+    <div className="min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 bg-surface-50">
+      <div className="container-narrow px-3.5 sm:px-6">
+        <div className="mb-6 sm:mb-10">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-surface-900 text-center mb-1.5 sm:mb-2">Book a Service</h1>
+          <p className="text-xs sm:text-sm text-surface-500 text-center">Complete the steps below to request a service.</p>
         </div>
 
         <BookingStepper steps={bookingSteps} currentStep={step} />
 
-        <div className="mt-10 bg-white rounded-2xl border border-surface-200 shadow-sm p-6 md:p-8">
+        <div className="mt-6 sm:mt-10 bg-white rounded-2xl border border-surface-200 shadow-sm p-4 sm:p-6 md:p-8">
           {/* Step 0: Choose Service */}
           {step === 0 && (
             <div>
@@ -418,12 +419,12 @@ export default function BookPage() {
 
                 <div>
                   <label className="block text-sm font-semibold text-surface-900 mb-2">Time Slot</label>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-w-lg">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-w-lg">
                     {timeSlots.map((slot) => (
                       <button
                         key={slot}
                         onClick={() => update('time', slot)}
-                        className={`px-3 py-2.5 text-sm rounded-xl border-2 transition-all ${
+                        className={`px-3 py-2.5 text-xs sm:text-sm rounded-xl border-2 transition-all ${
                           booking.time === slot
                             ? 'border-brand-600 bg-brand-50 text-brand-700 font-semibold'
                             : 'border-surface-200 hover:border-brand-200 text-surface-700'
@@ -446,9 +447,9 @@ export default function BookPage() {
 
               <div className="space-y-6">
                 {/* Contact Inputs */}
-                <div className="p-5 rounded-2xl bg-brand-50/50 border border-brand-200 space-y-4">
+                <div className="p-4 sm:p-5 rounded-2xl bg-brand-50/50 border border-brand-200 space-y-4">
                   <h3 className="text-sm font-bold text-surface-900">Customer Contact Information</h3>
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-surface-700 mb-1.5">
                         Mobile Phone Number * <span className="text-rose-500">(Required)</span>
@@ -461,7 +462,7 @@ export default function BookPage() {
                           placeholder="+92 300 1234567"
                           value={booking.phone}
                           onChange={(e) => update('phone', e.target.value)}
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-white"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-white text-sm"
                         />
                       </div>
                       {(!booking.phone || booking.phone.trim().length < 10) && (
@@ -482,7 +483,7 @@ export default function BookPage() {
                           placeholder="ahmed@example.com"
                           value={booking.email}
                           onChange={(e) => update('email', e.target.value)}
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-white"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-200 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-white text-sm"
                         />
                       </div>
                     </div>
@@ -490,7 +491,7 @@ export default function BookPage() {
                 </div>
 
                 <div className="p-4 rounded-xl bg-surface-50">
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <p className="text-xs text-surface-500 uppercase tracking-wider font-semibold">Service</p>
                       <p className="font-semibold text-surface-900 mt-1">{selectedService?.name || '—'}</p>
@@ -502,7 +503,7 @@ export default function BookPage() {
                     {booking.description && (
                       <div className="sm:col-span-2">
                         <p className="text-xs text-surface-500 uppercase tracking-wider font-semibold">Description</p>
-                        <p className="text-surface-700 mt-1">{booking.description}</p>
+                        <p className="text-surface-700 mt-1 break-words">{booking.description}</p>
                       </div>
                     )}
                     <div>
@@ -530,9 +531,9 @@ export default function BookPage() {
 
                 <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-start gap-3">
                   <Mail className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                  <p className="text-sm text-amber-800">
+                  <p className="text-xs sm:text-sm text-amber-800">
                     A confirmation email will automatically be generated and sent to{' '}
-                    <strong>{booking.email || 'your email'}</strong> upon booking.
+                    <strong className="break-all">{booking.email || 'your email'}</strong> upon booking.
                   </p>
                 </div>
               </div>
@@ -540,21 +541,21 @@ export default function BookPage() {
           )}
 
           {/* Navigation */}
-          <div className="mt-8 flex items-center justify-between pt-6 border-t border-surface-100">
+          <div className="mt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-surface-100">
             <button
               onClick={() => setStep(Math.max(0, step - 1))}
-              className={`flex items-center gap-2 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors ${step === 0 ? 'invisible' : ''}`}
+              className={`flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors ${step === 0 ? 'invisible sm:invisible' : ''}`}
             >
               <ArrowLeft size={16} /> Back
             </button>
 
             {step < 5 ? (
-              <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
+              <Button onClick={() => setStep(step + 1)} disabled={!canProceed()} className="w-full sm:w-auto justify-center">
                 Continue
                 <ArrowRight size={16} />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={!canProceed()}>
+              <Button onClick={handleSubmit} disabled={!canProceed()} className="w-full sm:w-auto justify-center">
                 Confirm Booking & Send Email
                 <Check size={16} />
               </Button>

@@ -66,15 +66,15 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
       <div ref={dropdownRef} className={`relative ${className}`}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-1.5 text-sm text-surface-600 hover:text-surface-900 transition-colors"
+          className="flex items-center gap-1.5 text-xs sm:text-sm text-surface-600 hover:text-surface-900 transition-colors py-1.5 px-2 rounded-lg hover:bg-surface-50"
         >
-          <MapPin size={16} />
-          <span className="font-medium hidden sm:inline">{selected?.name || 'Select Location'}</span>
-          <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <MapPin size={16} className="text-brand-600 shrink-0" />
+          <span className="font-medium hidden sm:inline max-w-[130px] truncate">{selected?.name || 'Select Location'}</span>
+          <ChevronDown size={14} className={`transition-transform shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {isOpen && (
-          <div className="absolute top-full mt-2 right-0 w-64 bg-white rounded-xl shadow-xl border border-surface-200 p-2 z-50">
+          <div className="absolute top-full mt-2 right-0 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-xl border border-surface-200 p-2 z-50">
             <div className="relative mb-2">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
               <input
@@ -82,7 +82,7 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
                 placeholder="Search area..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 text-sm border border-surface-200 rounded-lg focus:outline-none focus:border-brand-500"
+                className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-surface-200 rounded-lg focus:outline-none focus:border-brand-500"
               />
             </div>
             <div className="max-h-48 overflow-y-auto">
@@ -91,7 +91,7 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
                   key={loc.id}
                   onClick={() => handleSelect(loc)}
                   disabled={!loc.active}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                     selected?.id === loc.id
                       ? 'bg-brand-50 text-brand-700 font-medium'
                       : loc.active
@@ -99,9 +99,9 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
                       : 'text-surface-400 cursor-not-allowed'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span>{loc.name}</span>
-                    {!loc.active && <span className="text-xs text-surface-400">{loc.note}</span>}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate">{loc.name}</span>
+                    {!loc.active && <span className="text-[10px] text-surface-400 shrink-0">{loc.note}</span>}
                   </div>
                 </button>
               ))}
@@ -116,18 +116,18 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
     <div ref={dropdownRef} className={`relative ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-surface-200 rounded-xl shadow-sm hover:border-brand-300 transition-colors text-left"
+        className="w-full flex items-center gap-3 px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white border border-surface-200 rounded-xl shadow-sm hover:border-brand-300 transition-colors text-left"
       >
         <MapPin size={20} className="text-brand-600 shrink-0" />
         <div className="flex-1 min-w-0">
-          <div className="text-xs text-surface-500">Where do you need a service?</div>
-          <div className="font-semibold text-surface-900 truncate">{selected?.name || 'Select your area'}</div>
+          <div className="text-[11px] sm:text-xs text-surface-500">Where do you need a service?</div>
+          <div className="font-semibold text-surface-900 text-sm sm:text-base truncate">{selected?.name || 'Select your area'}</div>
         </div>
         <ChevronDown size={18} className={`text-surface-400 transition-transform shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 left-0 right-0 bg-white rounded-xl shadow-xl border border-surface-200 p-2 z-50">
+        <div className="absolute top-full mt-2 left-0 right-0 max-w-full bg-white rounded-xl shadow-xl border border-surface-200 p-2 z-50">
           <div className="relative mb-2">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
             <input
@@ -135,7 +135,7 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
               placeholder="Search your area..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2.5 text-sm border border-surface-200 rounded-lg focus:outline-none focus:border-brand-500"
+              className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-surface-200 rounded-lg focus:outline-none focus:border-brand-500"
             />
           </div>
           <div className="max-h-56 overflow-y-auto">
@@ -144,7 +144,7 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
                 key={loc.id}
                 onClick={() => handleSelect(loc)}
                 disabled={!loc.active}
-                className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                   selected?.id === loc.id
                     ? 'bg-brand-50 text-brand-700 font-medium'
                     : loc.active
@@ -152,9 +152,9 @@ export function LocationSelector({ variant = 'default', onSelect, selectedId, cl
                     : 'text-surface-400 cursor-not-allowed'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span>{loc.name}</span>
-                  {!loc.active && <span className="text-xs">{loc.note}</span>}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate">{loc.name}</span>
+                  {!loc.active && <span className="text-[10px] text-surface-400 shrink-0">{loc.note}</span>}
                 </div>
               </button>
             ))}

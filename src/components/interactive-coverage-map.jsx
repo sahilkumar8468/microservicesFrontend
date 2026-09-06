@@ -230,10 +230,10 @@ export default function InteractiveCoverageMap({
       )}
 
       {/* Floating Header Info Badge (Top Left) */}
-      <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
-        <span className="bg-white/95 backdrop-blur-md border border-surface-200 text-surface-900 text-xs font-bold px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5">
-          <MapPin className="h-3.5 w-3.5 text-brand-600" />
-          {baseCity}: {fromDistanceKm}km ➔ {toDistanceKm}km Radius
+      <div className="absolute top-3 left-3 z-10 flex items-center gap-2 max-w-[calc(100%-4rem)]">
+        <span className="bg-white/95 backdrop-blur-md border border-surface-200 text-surface-900 text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5 truncate">
+          <MapPin className="h-3.5 w-3.5 text-brand-600 shrink-0" />
+          <span className="truncate">{baseCity}: {fromDistanceKm}km ➔ {toDistanceKm}km</span>
         </span>
       </div>
 
@@ -243,7 +243,7 @@ export default function InteractiveCoverageMap({
           <button
             type="button"
             onClick={handleZoomIn}
-            className="w-9 h-9 rounded-xl bg-white/95 backdrop-blur-md border border-surface-200 text-surface-800 hover:bg-surface-50 hover:text-brand-600 shadow-md flex items-center justify-center transition-all active:scale-95"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/95 backdrop-blur-md border border-surface-200 text-surface-800 hover:bg-surface-50 hover:text-brand-600 shadow-md flex items-center justify-center transition-all active:scale-95"
             title="Zoom In (+)"
           >
             <ZoomIn className="h-4 w-4" />
@@ -251,7 +251,7 @@ export default function InteractiveCoverageMap({
           <button
             type="button"
             onClick={handleZoomOut}
-            className="w-9 h-9 rounded-xl bg-white/95 backdrop-blur-md border border-surface-200 text-surface-800 hover:bg-surface-50 hover:text-brand-600 shadow-md flex items-center justify-center transition-all active:scale-95"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/95 backdrop-blur-md border border-surface-200 text-surface-800 hover:bg-surface-50 hover:text-brand-600 shadow-md flex items-center justify-center transition-all active:scale-95"
             title="Zoom Out (-)"
           >
             <ZoomOut className="h-4 w-4" />
@@ -259,7 +259,7 @@ export default function InteractiveCoverageMap({
           <button
             type="button"
             onClick={handleResetCenter}
-            className="w-9 h-9 rounded-xl bg-white/95 backdrop-blur-md border border-surface-200 text-surface-800 hover:bg-surface-50 hover:text-brand-600 shadow-md flex items-center justify-center transition-all active:scale-95"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/95 backdrop-blur-md border border-surface-200 text-surface-800 hover:bg-surface-50 hover:text-brand-600 shadow-md flex items-center justify-center transition-all active:scale-95"
             title="Fit Map to Coverage Bounds"
           >
             <Locate className="h-4 w-4" />
@@ -268,21 +268,21 @@ export default function InteractiveCoverageMap({
       )}
 
       {/* Map Legend Footer Bar */}
-      <div className="absolute bottom-3 left-3 right-3 z-10 bg-white/95 backdrop-blur-md border border-surface-200 rounded-xl p-2.5 shadow-md flex flex-wrap items-center justify-between text-xs text-surface-700 font-semibold gap-2">
-        <div className="flex items-center gap-4">
+      <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 z-10 bg-white/95 backdrop-blur-md border border-surface-200 rounded-xl p-2 sm:p-2.5 shadow-md flex flex-wrap items-center justify-between text-[11px] sm:text-xs text-surface-700 font-semibold gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-emerald-500/20 border-2 border-dashed border-emerald-500" />
-            <span>Outer Radius: <strong className="text-emerald-700 font-bold">{toDistanceKm} km</strong></span>
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500/20 border-2 border-dashed border-emerald-500 shrink-0" />
+            <span>Outer: <strong className="text-emerald-700 font-bold">{toDistanceKm} km</strong></span>
           </div>
           {fromDistanceKm > 0 && (
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-rose-500/20 border-2 border-dashed border-rose-500" />
-              <span>Inner Offset: <strong className="text-rose-600 font-bold">{fromDistanceKm} km</strong></span>
+              <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-rose-500/20 border-2 border-dashed border-rose-500 shrink-0" />
+              <span>Inner: <strong className="text-rose-600 font-bold">{fromDistanceKm} km</strong></span>
             </div>
           )}
         </div>
-        <div className="text-[11px] text-surface-500 font-medium">
-          Drag pin marker or click map to move center hub location
+        <div className="text-[10px] text-surface-400 font-medium hidden sm:block">
+          Drag pin or click map to reposition hub
         </div>
       </div>
     </div>

@@ -5,12 +5,22 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: clip;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     @apply bg-white text-surface-900 font-sans;
+    overflow-x: clip;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
   }
 
   *:focus-visible {
@@ -20,17 +30,20 @@
 
 @layer components {
   .container-wide {
-    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 w-full;
   }
 
   .container-narrow {
-    @apply mx-auto max-w-4xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto max-w-4xl px-3.5 sm:px-6 lg:px-8 w-full;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .touch-pan-y {
+    touch-action: pan-y;
   }
 }
 

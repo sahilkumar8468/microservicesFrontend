@@ -12,7 +12,7 @@ export function ClientShell({ children }) {
   return (
     <>
       {!isAdminRoute && <Navbar />}
-      <main className={!isAdminRoute ? 'flex-1 pt-16' : 'flex-1'}>
+      <main className={!isAdminRoute ? 'flex-1 pt-16 sm:pt-20 w-full overflow-x-hidden min-w-0' : 'flex-1 w-full overflow-x-hidden min-w-0'}>
         {children}
       </main>
       {!isAdminRoute && <Footer />}

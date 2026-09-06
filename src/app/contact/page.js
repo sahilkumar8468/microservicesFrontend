@@ -27,25 +27,25 @@ export default function ContactPage() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-surface-50 via-surface-0 to-brand-50/20 pt-28 pb-12 sm:pt-36 sm:pb-20">
+      <section className="relative bg-gradient-to-br from-surface-50 via-surface-0 to-brand-50/20 pt-20 pb-10 sm:pt-32 sm:pb-16">
         <div className="absolute inset-0 bg-[url('/images/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-brand-700 mb-4 sm:mb-6">
+        <div className="relative z-10 max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-brand-700 mb-3 sm:mb-6">
             <MessageCircle className="h-4 w-4" />
             Get In Touch
           </span>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-surface-900 tracking-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-surface-900 tracking-tight">
             We'd Love to <span className="text-brand-600">Hear</span> From You
           </h1>
-          <p className="mt-3 sm:mt-4 text-base sm:text-lg text-surface-500 max-w-2xl mx-auto">
+          <p className="mt-2.5 sm:mt-4 text-xs sm:text-base md:text-lg text-surface-500 max-w-2xl mx-auto">
             Have a question, feedback, or need help? Reach out anytime — our team is here for you.
           </p>
         </div>
       </section>
 
       {/* Contact Grid */}
-      <section className="relative -mt-6 sm:-mt-10 pb-12 sm:pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative -mt-4 sm:-mt-8 pb-12 sm:pb-20">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
             {/* Contact Info Cards */}
             <div className="lg:col-span-2 space-y-3.5 sm:space-y-4">
@@ -186,8 +186,8 @@ export default function ContactPage() {
       </section>
 
       {/* Real Interactive & Embedded Office Map */}
-      <section className="pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="pb-12 sm:pb-20">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <OfficeLocationMap />
         </div>
       </section>

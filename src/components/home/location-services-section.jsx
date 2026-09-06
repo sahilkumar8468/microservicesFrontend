@@ -36,26 +36,26 @@ export function LocationServicesSection() {
             />
           </div>
 
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-surface-200 shadow-sm">
-              <Wrench size={16} className="text-brand-600" />
+          <div className="text-center mb-8 px-2">
+            <div className="inline-flex items-center flex-wrap justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white border border-surface-200 shadow-sm max-w-full text-xs sm:text-sm">
+              <Wrench size={16} className="text-brand-600 shrink-0" />
               <span className="font-semibold text-surface-900">
                 {availableServices.length} Service{availableServices.length !== 1 ? 's' : ''} Available
               </span>
-              <span className="text-sm text-surface-500">
+              <span className="text-xs sm:text-sm text-surface-500 truncate max-w-[150px] sm:max-w-xs">
                 in {selectedLocation?.name || 'your area'}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
             {services.map((service) => {
               const isAvailable = availableServices.includes(service.id);
               const Icon = serviceIcons[service.icon];
               return (
                 <div
                   key={service.id}
-                  className={`relative group rounded-xl p-4 text-center transition-all duration-300 ${
+                  className={`relative group rounded-xl p-3 sm:p-4 text-center transition-all duration-300 ${
                     isAvailable
                       ? 'bg-white border border-surface-200 hover:border-brand-200 hover:shadow-md cursor-pointer'
                       : 'bg-surface-100/50 border border-surface-200/50 opacity-50 cursor-not-allowed'

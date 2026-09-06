@@ -9,9 +9,9 @@ const variants = {
 };
 
 const sizes = {
-  sm: 'px-4 py-2 text-xs font-bold rounded-xl',
-  md: 'px-6 py-3 text-sm font-extrabold rounded-xl',
-  lg: 'px-8 py-4 text-base font-extrabold rounded-2xl',
+  sm: 'px-3 sm:px-4 py-2 text-xs font-bold rounded-xl min-h-[38px]',
+  md: 'px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-extrabold rounded-xl min-h-[44px]',
+  lg: 'px-5 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-extrabold rounded-xl sm:rounded-2xl min-h-[48px]',
 };
 
 export function Button({

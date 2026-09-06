@@ -150,20 +150,20 @@ export function ServiceCoverageBanner() {
 
       {/* Interactive Map Modal for Public Visitors */}
       {showMapModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-950/75 backdrop-blur-md p-4">
-          <div className="bg-white text-surface-900 border border-surface-200 w-full max-w-3xl rounded-3xl shadow-2xl p-6 relative overflow-hidden">
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-surface-100">
-              <div>
-                <h3 className="text-surface-900 font-extrabold text-lg flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-brand-600" /> Live Service Coverage Map
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-950/75 backdrop-blur-md p-3 sm:p-4">
+          <div className="bg-white text-surface-900 border border-surface-200 w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 relative">
+            <div className="flex items-start justify-between pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-surface-100 gap-2">
+              <div className="min-w-0">
+                <h3 className="text-surface-900 font-extrabold text-base sm:text-lg flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-brand-600 shrink-0" /> Live Service Coverage Map
                 </h3>
-                <p className="text-surface-500 text-xs font-medium mt-0.5">
-                  Operating City: <strong>{config.baseCity}</strong> · Serving Radius: <strong>{config.fromDistanceKm || 0} km to {config.toDistanceKm || 15} km</strong>
+                <p className="text-surface-500 text-xs font-medium mt-0.5 break-words">
+                  Operating City: <strong>{config.baseCity}</strong> · Radius: <strong>{config.fromDistanceKm || 0}km - {config.toDistanceKm || 15}km</strong>
                 </p>
               </div>
               <button
                 onClick={() => setShowMapModal(false)}
-                className="w-9 h-9 rounded-xl border border-surface-200 bg-surface-50 hover:bg-surface-100 text-surface-600 flex items-center justify-center transition-all"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-surface-200 bg-surface-50 hover:bg-surface-100 text-surface-600 flex items-center justify-center transition-all shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -177,14 +177,14 @@ export function ServiceCoverageBanner() {
               lat={config.centerLat || 24.8138}
               lng={config.centerLng || 67.0671}
               isInteractive={true}
-              height="400px"
+              height="300px"
             />
 
-            <div className="mt-4 flex justify-between items-center text-xs">
+            <div className="mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 text-xs">
               <span className="text-surface-500 font-medium">Zoom in/out to locate your home address inside the emerald coverage circle.</span>
               <Link
                 href="/book"
-                className="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all"
+                className="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all text-center shrink-0"
               >
                 Proceed to Book Service
               </Link>

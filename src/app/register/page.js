@@ -323,7 +323,7 @@ export default function RegisterPage() {
                     <label className="block text-sm font-semibold text-surface-700 text-center mb-3">
                       Enter 6-Digit OTP Code
                     </label>
-                    <div className="flex justify-center gap-2">
+                    <div className="flex justify-center gap-1.5 sm:gap-2">
                       {otpCode.map((digit, idx) => (
                         <input
                           key={idx}
@@ -333,7 +333,7 @@ export default function RegisterPage() {
                           value={digit}
                           onChange={(e) => handleOtpChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-xl border border-surface-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
+                          className="w-9 h-11 sm:w-12 sm:h-14 text-center text-lg sm:text-xl font-bold rounded-xl border border-surface-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
                         />
                       ))}
                     </div>
@@ -419,11 +419,11 @@ export default function RegisterPage() {
 
       {/* --- MOCK GOOGLE SELECTOR MODAL --- */}
       {showGoogleModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-md rounded-2xl border border-surface-200 shadow-2xl p-6 relative animate-in fade-in-50 zoom-in-95 duration-200">
-            <div className="text-center mb-6">
-              <div className="w-12 h-12 rounded-full bg-surface-50 flex items-center justify-center mx-auto mb-3 border border-surface-200">
-                <svg className="w-6 h-6" viewBox="0 0 24 24">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3.5 sm:p-4">
+          <div className="bg-white w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-surface-200 shadow-2xl p-4 sm:p-6 relative animate-in fade-in-50 zoom-in-95 duration-200">
+            <div className="text-center mb-5 sm:mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-50 flex items-center justify-center mx-auto mb-3 border border-surface-200">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
@@ -442,8 +442,8 @@ export default function RegisterPage() {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl font-bold text-surface-900">Sign in with Google</h2>
-              <p className="text-sm text-surface-500 mt-1">Choose an account to continue to HomeSolution</p>
+              <h2 className="text-lg sm:text-xl font-bold text-surface-900">Sign in with Google</h2>
+              <p className="text-xs sm:text-sm text-surface-500 mt-1">Choose an account to continue to HomeSolution</p>
             </div>
 
             <div className="space-y-2">
@@ -457,14 +457,14 @@ export default function RegisterPage() {
                   onClick={() => handleGoogleAuth(acc.email, acc.name)}
                   className="w-full flex items-center gap-3 p-3 rounded-xl border border-surface-100 hover:border-brand-300 hover:bg-brand-50/50 text-left transition-all group"
                 >
-                  <div className="w-10 h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm shrink-0">
                     {acc.name.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-surface-950 truncate">{acc.name}</p>
-                    <p className="text-xs text-surface-500 truncate">{acc.email}</p>
+                    <p className="font-semibold text-surface-950 text-xs sm:text-sm truncate">{acc.name}</p>
+                    <p className="text-[11px] sm:text-xs text-surface-500 truncate">{acc.email}</p>
                   </div>
-                  <span className="text-xs text-brand-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-xs text-brand-600 font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                     Select &rarr;
                   </span>
                 </button>

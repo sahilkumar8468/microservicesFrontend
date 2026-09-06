@@ -1,1 +1,11 @@
-{"version":4,"routes":{"/services/plumbing":{},"/services/electrical":{},"/services/ac-repair":{},"/services/carpenter":{},"/services/handyman":{},"/services/water-tank-cleaning":{},"/services/home-decoration":{},"/services/furniture-transformation":{}},"dynamicRoutes":{"/services/[slug]":{"dataRoute":null,"dataRouteRegex":null,"fallback":null,"fallbackRevalidate":false,"fallbackSourceRoute":"/services/[slug]","routeRegex":"^\\/services\\/([^/]+?)(?:\\/)?$","allowHeader":[]}},"notFoundRoutes":[],"preview":{"previewModeId":"6f90b388a9349b9fad994ad95af8d978","previewModeSigningKey":"ab4f59971b40a10c0d2119f79ad01c1ec8da11eb149dea16733385232ca3da5f","previewModeEncryptionKey":"c3d6105ff86a535b60593fff89ed456263610e4b271f72b148b04e2b82a177f2"}}
+{
+  "version": 4,
+  "routes": {},
+  "dynamicRoutes": {},
+  "notFoundRoutes": [],
+  "preview": {
+    "previewModeId": "661b0488a7fa1f8e5ba44cc2f50e34d8",
+    "previewModeSigningKey": "f3c62c700f656bc9fa1b82423585c44a2131e46b341ef8db77b34f2fb87f959a",
+    "previewModeEncryptionKey": "cb66bf2b70be119e7f1075467a6b4b137868ce9c698f35998b5e77a26008953b"
+  }
+}

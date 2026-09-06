@@ -15,22 +15,22 @@ export function QualityTrustSection() {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
-    <section ref={ref} className="py-20 md:py-28 bg-surface-50">
+    <section ref={ref} className="py-16 md:py-28 bg-surface-50 overflow-hidden">
       <div className="container-wide">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left: Trust list */}
-          <div className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
-            <span className="text-sm font-semibold tracking-wider uppercase text-brand-600 mb-3 block">
+          <div className={`flex flex-col items-center text-center lg:items-start lg:text-left transition-all duration-700 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
+            <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase text-brand-600 mb-2.5 sm:mb-3 block text-center lg:text-left mx-auto lg:mx-0">
               Quality & Trust
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-surface-900 text-balance leading-[1.15]">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-surface-900 text-balance leading-[1.18] sm:leading-[1.15] text-center lg:text-left">
               Trusted by Homeowners Across Karachi
             </h2>
-            <p className="mt-4 text-lg text-surface-500 leading-relaxed">
+            <p className="mt-4 text-sm sm:text-lg text-surface-500 leading-relaxed text-center lg:text-left mx-auto lg:mx-0 max-w-lg">
               We take quality seriously. Every aspect of our service is designed to give you peace of mind.
             </p>
 
-            <div className="mt-8 grid sm:grid-cols-2 gap-3">
+            <div className="mt-8 grid sm:grid-cols-2 gap-3 w-full text-left">
               {trustItems.map((item) => (
                 <div key={item.title} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-surface-200 hover:border-brand-200 hover:shadow-sm transition-all">
                   <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center shrink-0">
@@ -76,8 +76,8 @@ export function QualityTrustSection() {
               </div>
 
               {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-brand-600/10 rounded-2xl -z-10" />
-              <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-brand-600/5 rounded-2xl -z-10" />
+              <div className="hidden sm:block absolute -top-4 -right-4 w-16 h-16 bg-brand-600/10 rounded-2xl -z-10" />
+              <div className="hidden sm:block absolute -bottom-4 -left-4 w-24 h-24 bg-brand-600/5 rounded-2xl -z-10" />
             </div>
           </div>
         </div>

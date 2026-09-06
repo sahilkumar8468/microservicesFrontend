@@ -50,15 +50,15 @@ export function Navbar() {
       >
         <div className="container-wide flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="relative w-11 h-11 rounded-xl bg-white border border-surface-200 overflow-hidden flex items-center justify-center p-0.5 shadow-sm group-hover:scale-105 transition-transform">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group min-w-0">
+            <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white border border-surface-200 overflow-hidden flex items-center justify-center p-0.5 shadow-sm group-hover:scale-105 transition-transform shrink-0">
               <img src="/logo.png" alt={siteConfig.name} className="w-full h-full object-contain" />
             </div>
-            <div>
-              <span className="font-extrabold text-xl text-surface-900 tracking-tight block leading-none">
+            <div className="min-w-0">
+              <span className="font-extrabold text-base sm:text-xl text-surface-900 tracking-tight block leading-none truncate">
                 Universal<span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">Interior</span>
               </span>
-              <span className="text-[10px] font-bold tracking-widest text-surface-400 uppercase block mt-1">
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-widest text-surface-400 uppercase block mt-0.5 sm:mt-1">
                 & Microservices
               </span>
             </div>
@@ -134,8 +134,8 @@ export function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 z-40 lg:hidden transition-all duration-300 ${
-          mobileOpen ? 'visible' : 'invisible'
+        className={`fixed inset-0 z-40 lg:hidden overflow-hidden transition-all duration-300 ${
+          mobileOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
         }`}
       >
         <div
@@ -145,27 +145,27 @@ export function Navbar() {
           onClick={() => setMobileOpen(false)}
         />
         <div
-          className={`absolute top-0 right-0 w-full max-w-sm h-full bg-white shadow-2xl transition-transform duration-300 ${
+          className={`absolute top-0 right-0 w-[85vw] max-w-sm h-full bg-white shadow-2xl transition-transform duration-300 flex flex-col z-50 ${
             mobileOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-          <div className="flex items-center justify-between p-4 border-b border-surface-100">
-            <Link href="/" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
-              <div className="w-9 h-9 rounded-lg bg-white border border-surface-200 p-0.5 flex items-center justify-center overflow-hidden shrink-0">
+          <div className="flex items-center justify-between p-4 border-b border-surface-100 shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 min-w-0" onClick={() => setMobileOpen(false)}>
+              <div className="w-8 h-8 rounded-lg bg-white border border-surface-200 p-0.5 flex items-center justify-center overflow-hidden shrink-0">
                 <img src="/logo.png" alt={siteConfig.name} className="w-full h-full object-contain" />
               </div>
-              <span className="font-bold text-base">{siteConfig.name}</span>
+              <span className="font-bold text-base truncate">{siteConfig.name}</span>
             </Link>
             <button
               onClick={() => setMobileOpen(false)}
-              className="p-2 rounded-lg hover:bg-surface-100"
+              className="p-2 rounded-lg hover:bg-surface-100 text-surface-600 transition-colors"
               aria-label="Close menu"
             >
               <X size={20} />
             </button>
           </div>
 
-          <nav className="p-4 space-y-1">
+          <nav className="flex-1 overflow-y-auto p-4 space-y-1.5 touch-pan-y">
             {navLinks.map((link) => {
               const active = link.href === '/' ? pathname === '/' : pathname?.startsWith(link.href);
               return (
@@ -212,19 +212,19 @@ export function Navbar() {
                 Login
               </Link>
             )}
-            <div className="pt-3 px-2">
-              <Button href="/book" className="w-full" size="lg">
+            <div className="pt-3 px-1">
+              <Button href="/book" onClick={() => setMobileOpen(false)} className="w-full" size="lg">
                 Book a Service
               </Button>
             </div>
           </nav>
 
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-surface-100">
+          <div className="p-4 border-t border-surface-100 bg-surface-50/50 shrink-0">
             <a
               href={`tel:${siteConfig.contact.phone}`}
-              className="flex items-center justify-center gap-2 text-sm text-surface-600 hover:text-brand-600 transition-colors py-2"
+              className="flex items-center justify-center gap-2 text-xs font-semibold text-surface-600 hover:text-brand-600 transition-colors py-1.5"
             >
-              <Phone size={16} />
+              <Phone size={14} className="text-brand-600" />
               {siteConfig.contact.phone}
             </a>
           </div>

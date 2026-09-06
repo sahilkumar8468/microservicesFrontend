@@ -66,53 +66,53 @@ export default function HowItWorksPage() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-surface-50 via-white to-brand-50/30 pt-32 pb-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-surface-50 via-white to-brand-50/30 pt-20 pb-10 sm:pt-32 sm:pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
         {/* Decorative circles */}
-        <div className="absolute top-20 right-0 w-96 h-96 bg-brand-100/50 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-amber-100/30 rounded-full blur-3xl" />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-semibold text-brand-700 mb-6">
-            <ArrowRight className="h-4 w-4" />
+        <div className="absolute top-20 right-0 w-96 h-96 bg-brand-100/50 rounded-full blur-3xl hidden sm:block" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-amber-100/30 rounded-full blur-3xl hidden sm:block" />
+        <div className="relative z-10 max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1 text-xs sm:text-sm font-semibold text-brand-700 mb-3 sm:mb-6">
+            <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Simple 6-Step Process
           </span>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-surface-900 tracking-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-surface-900 tracking-tight">
             How It <span className="text-brand-600">Works</span>
           </h1>
-          <p className="mt-4 text-lg text-surface-500 max-w-2xl mx-auto">
+          <p className="mt-2.5 sm:mt-4 text-xs sm:text-base md:text-lg text-surface-500 max-w-2xl mx-auto">
             From booking to doorstep — your home solution is just 6 simple steps away. No hassle, no hidden charges.
           </p>
         </div>
       </section>
 
       {/* Steps Timeline */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-10 sm:py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <div className="relative">
             {/* Vertical Line */}
             <div className="absolute left-8 top-0 bottom-0 w-px bg-surface-200 hidden md:block" />
 
-            <div className="space-y-12 md:space-y-0">
+            <div className="space-y-8 md:space-y-0">
               {steps.map((step, index) => (
-                <div key={step.number} className="relative md:pl-20 pb-12 md:pb-16 last:pb-0">
+                <div key={step.number} className="relative md:pl-20 pb-8 md:pb-16 last:pb-0">
                   {/* Step Number Circle */}
                   <div className="hidden md:flex absolute left-0 top-0 w-16 h-16 rounded-2xl bg-white border-2 border-surface-200 items-center justify-center shadow-sm z-10">
                     <span className="text-lg font-bold text-surface-400">{step.number}</span>
                   </div>
 
-                  <div className="flex gap-5">
+                  <div className="flex gap-3 sm:gap-5">
                     {/* Mobile Number */}
-                    <div className="md:hidden flex-shrink-0 w-16 h-16 rounded-2xl bg-white border-2 border-surface-200 flex items-center justify-center shadow-sm">
-                      <span className="text-lg font-bold text-surface-400">{step.number}</span>
+                    <div className="md:hidden flex-shrink-0 w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white border-2 border-surface-200 flex items-center justify-center shadow-sm">
+                      <span className="text-sm sm:text-base font-bold text-surface-500">{step.number}</span>
                     </div>
 
-                    <div className="flex-1">
-                      <div className={`inline-flex items-center gap-3 rounded-xl ${step.color} px-4 py-2 mb-4`}>
-                        <step.icon className="h-5 w-5" />
-                        <span className="font-semibold text-sm">{step.title}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className={`inline-flex items-center gap-2 sm:gap-3 rounded-xl ${step.color} px-3 sm:px-4 py-1.5 sm:py-2 mb-2 sm:mb-4`}>
+                        <step.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <span className="font-semibold text-xs sm:text-sm">{step.title}</span>
                       </div>
-                      <p className="text-surface-500 leading-relaxed text-lg">{step.description}</p>
-                      <p className="mt-3 text-sm text-surface-400 italic">{step.detail}</p>
+                      <p className="text-surface-500 leading-relaxed text-xs sm:text-base md:text-lg break-words">{step.description}</p>
+                      <p className="mt-1.5 sm:mt-3 text-[11px] sm:text-sm text-surface-400 italic break-words">{step.detail}</p>
                     </div>
                   </div>
                 </div>
@@ -120,13 +120,13 @@ export default function HowItWorksPage() {
             </div>
           </div>
 
-          <div className="text-center mt-16">
+          <div className="text-center mt-10 sm:mt-16">
             <Link
               href="/book"
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-8 py-4 text-white font-semibold hover:bg-brand-700 active:scale-[0.98] transition-all shadow-lg shadow-brand-200 text-lg"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 sm:px-8 py-3.5 sm:py-4 text-white font-semibold hover:bg-brand-700 active:scale-[0.98] transition-all shadow-lg shadow-brand-200 text-sm sm:text-lg"
             >
               Start Your Booking
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
             </Link>
           </div>
         </div>

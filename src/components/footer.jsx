@@ -34,7 +34,7 @@ export function Footer() {
       {/* Background glow */}
       <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-full max-w-7xl h-80 bg-orange-600/10 blur-[130px] pointer-events-none" />
 
-      <div className="container-wide py-16 lg:py-24 relative z-10">
+      <div className="container-wide py-12 sm:py-16 lg:py-24 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">

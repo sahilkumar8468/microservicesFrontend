@@ -16,6 +16,13 @@ const outfit = Outfit({
   variable: '--font-outfit',
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#ea580c',
+};
+
 export const metadata = {
   title: {
     default: `Trusted Home Services in Karachi | ${siteConfig.name}`,
@@ -40,7 +47,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${jakarta.variable} ${outfit.variable}`}>
-      <body className="min-h-screen flex flex-col font-sans bg-white text-surface-900 antialiased selection:bg-brand-500 selection:text-white">
+      <body className="min-h-screen flex flex-col font-sans bg-white text-surface-900 antialiased selection:bg-brand-500 selection:text-white overflow-x-hidden w-full max-w-full">
         <AuthProvider>
           <ClientShell>
             {children}
