@@ -390,8 +390,12 @@ export default function BookingDetailPage() {
                       <p className="text-xs text-brand-600 font-semibold truncate">{booking.employee.specialty}</p>
                       <div className="flex items-center gap-1 mt-1">
                         <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400 shrink-0" />
-                        <span className="text-xs font-semibold text-surface-700">{booking.employee.rating}</span>
-                        <span className="text-xs text-surface-400">· {booking.employee.jobs} jobs served</span>
+                        <span className="text-xs font-semibold text-surface-700">
+                          {booking.employee.rating !== null && booking.employee.rating !== undefined && Number(booking.employee.rating) > 0
+                            ? Number(booking.employee.rating).toFixed(1)
+                            : 'New Partner'}
+                        </span>
+                        <span className="text-xs text-surface-400">· {booking.employee.jobs || 0} jobs served</span>
                       </div>
                     </div>
                   </div>

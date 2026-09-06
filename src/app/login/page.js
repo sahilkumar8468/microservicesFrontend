@@ -232,37 +232,7 @@ export default function LoginPage() {
               <p className="text-xs sm:text-sm text-surface-500 mt-1">Choose an account to continue to HomeSolution</p>
             </div>
 
-            <div className="space-y-2">
-              {[
-                { name: 'Fatima Ali', email: 'fatima.ali@gmail.com' },
-                { name: 'Zeeshan Khan', email: 'zeeshan.khan@gmail.com' }
-              ].map((acc) => (
-                <button
-                  key={acc.email}
-                  disabled={isGoogleSubmitting}
-                  onClick={() => handleGoogleAuth(acc.email, acc.name)}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-surface-100 hover:border-brand-300 hover:bg-brand-50/50 text-left transition-all group"
-                >
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm shrink-0">
-                    {acc.name.charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-surface-950 text-xs sm:text-sm truncate">{acc.name}</p>
-                    <p className="text-[11px] sm:text-xs text-surface-500 truncate">{acc.email}</p>
-                  </div>
-                  <span className="text-xs text-brand-600 font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
-                    Select &rarr;
-                  </span>
-                </button>
-              ))}
-            </div>
 
-            <div className="relative flex items-center justify-center my-4">
-              <div className="border-t border-surface-100 w-full" />
-              <span className="bg-white px-2.5 text-[10px] font-bold uppercase tracking-wider text-surface-400 absolute">
-                Or Use Custom Google Account
-              </span>
-            </div>
 
             <div className="space-y-3">
               <div>

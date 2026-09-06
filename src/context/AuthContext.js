@@ -151,6 +151,34 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const sendSmsOtp = async (phone, email) => {
+    const res = await fetch(`${API_URL}/auth/send-sms-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, email })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to send verification SMS');
+    }
+    return data;
+  };
+
+  const verifySmsOtp = async (phone, otp) => {
+    const res = await fetch(`${API_URL}/auth/verify-sms-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, otp })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Invalid verification code');
+    }
+    return data;
+  };
+
   const register = async (name, email, phone, password) => {
     const res = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
@@ -251,7 +279,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, refreshToken, loading, register, login, googleSignIn, logout, updateProfile, fetchWithAuth, silentRefreshToken, API_URL }}>
+    <AuthContext.Provider value={{ user, token, refreshToken, loading, register, login, googleSignIn, logout, updateProfile, sendSmsOtp, verifySmsOtp, fetchWithAuth, silentRefreshToken, API_URL }}>
       {children}
     </AuthContext.Provider>
   );

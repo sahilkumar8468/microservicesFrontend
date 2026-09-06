@@ -1175,7 +1175,11 @@ export default function AdminPage() {
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-1 text-amber-500">
                             <Star className="h-3.5 w-3.5 fill-current" />
-                            <span className="text-surface-900 font-extrabold text-xs">{Number(emp.rating).toFixed(1)}</span>
+                            <span className="text-surface-900 font-extrabold text-xs">
+                              {emp.rating !== null && emp.rating !== undefined && Number(emp.rating) > 0
+                                ? Number(emp.rating).toFixed(1)
+                                : 'New'}
+                            </span>
                           </div>
                         </td>
                         <td className="px-5 py-4 text-surface-900 font-bold text-xs">{emp.jobs}</td>
