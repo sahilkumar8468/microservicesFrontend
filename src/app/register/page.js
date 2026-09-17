@@ -167,7 +167,7 @@ export default function RegisterPage() {
     setErrorMsg('');
     try {
       const googleId = 'g_' + Math.floor(10000000 + Math.random() * 90000000);
-      await googleSignIn(email, name, googleId);
+      await googleSignIn(email, name, googleId, 'register');
       setShowGoogleModal(false);
       router.push('/account');
     } catch (err) {

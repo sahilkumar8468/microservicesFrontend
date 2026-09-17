@@ -219,16 +219,16 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const googleSignIn = async (email, name, googleId) => {
+  const googleSignIn = async (email, name, googleId, mode = 'login') => {
     const res = await fetch(`${API_URL}/auth/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, name, googleId })
+      body: JSON.stringify({ email, name, googleId, mode })
     });
 
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.error || 'Google Login failed');
+      throw new Error(data.error || 'Google authentication failed');
     }
 
     setToken(data.token);

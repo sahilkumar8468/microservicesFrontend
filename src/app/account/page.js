@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import {
   LayoutDashboard, Calendar, MapPin, User, Settings, LogOut,
   Clock, CheckCircle, XCircle, ChevronRight, Plus, Star, Phone, Mail,
-  ShieldCheck, RefreshCw
+  RefreshCw
 } from 'lucide-react';
 
 const tabs = [
@@ -140,15 +140,6 @@ export default function AccountPage() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2 pt-1 border-t border-surface-100">
-            <Link
-              href="/admin"
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-all"
-            >
-              <ShieldCheck className="h-3.5 w-3.5 text-brand-600" />
-              Admin Portal
-            </Link>
-          </div>
 
           {/* Horizontal Scrollable Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 -mx-1 px-1 scrollbar-none">
@@ -204,16 +195,6 @@ export default function AccountPage() {
                 ))}
               </nav>
 
-              {/* Admin Portal Quicklink */}
-              <div className="pt-4 border-t border-surface-100">
-                <Link
-                  href="/admin"
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-all"
-                >
-                  <ShieldCheck className="h-4 w-4 text-brand-600" />
-                  Admin Panel &rarr;
-                </Link>
-              </div>
 
               {/* Sign Out */}
               <div className="pt-4 border-t border-surface-100">

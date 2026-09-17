@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, ArrowRight, CheckCircle, RefreshCw, KeyRound } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight, CheckCircle, RefreshCw, KeyRound, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [customGoogleEmail, setCustomGoogleEmail] = useState('');
   const [customGoogleName, setCustomGoogleName] = useState('');
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
+  const [googleModalError, setGoogleModalError] = useState('');
 
   // Handle Form Submission -> Call backend login
   const handleSubmit = async (e) => {
@@ -37,17 +38,20 @@ export default function LoginPage() {
     }
   };
 
-  // Execute Google Authentication with backend
+  // Execute Google Authentication with backend (Strict verification)
   const handleGoogleAuth = async (email, name) => {
     setIsGoogleSubmitting(true);
     setErrorMsg('');
+    setGoogleModalError('');
     try {
       const googleId = 'g_' + Math.floor(10000000 + Math.random() * 90000000);
-      await googleSignIn(email, name, googleId);
+      await googleSignIn(email, name, googleId, 'login');
       setShowGoogleModal(false);
       router.push('/account');
     } catch (err) {
-      setErrorMsg(err.message || 'Google login failed.');
+      const msg = err.message || 'No account found with this email. Please create an account first.';
+      setGoogleModalError(msg);
+      setErrorMsg(msg);
     } finally {
       setIsGoogleSubmitting(false);
     }
@@ -71,8 +75,20 @@ export default function LoginPage() {
           </div>
 
           {errorMsg && (
-            <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-600 text-sm font-semibold rounded-xl">
-              {errorMsg}
+            <div className="mb-5 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl flex flex-col gap-1.5 shadow-sm">
+              <div className="flex items-center gap-2 font-bold text-rose-800 text-xs sm:text-sm">
+                <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />
+                <span>Sign In Failed</span>
+              </div>
+              <p className="text-xs text-rose-700 leading-relaxed font-medium">{errorMsg}</p>
+              {(errorMsg.toLowerCase().includes('create') || errorMsg.toLowerCase().includes('not made') || errorMsg.toLowerCase().includes('not found')) && (
+                <Link
+                  href="/register"
+                  className="mt-1 text-xs font-extrabold text-brand-600 hover:text-brand-700 underline inline-flex items-center gap-1"
+                >
+                  Click here to create your account now &rarr;
+                </Link>
+              )}
             </div>
           )}
 
@@ -232,7 +248,22 @@ export default function LoginPage() {
               <p className="text-xs sm:text-sm text-surface-500 mt-1">Choose an account to continue to HomeSolution</p>
             </div>
 
-
+            {googleModalError && (
+              <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs flex flex-col gap-1.5">
+                <div className="flex items-center gap-1.5 font-bold text-rose-800">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+                  <span>Account Not Registered</span>
+                </div>
+                <p className="leading-relaxed font-medium">{googleModalError}</p>
+                <Link
+                  href="/register"
+                  onClick={() => setShowGoogleModal(false)}
+                  className="mt-1 text-xs font-extrabold text-brand-600 hover:text-brand-700 underline inline-flex items-center gap-1"
+                >
+                  Create an account now &rarr;
+                </Link>
+              </div>
+            )}
 
             <div className="space-y-3">
               <div>

@@ -9,11 +9,32 @@ import { OfficeLocationMap } from '@/components/office-location-map';
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const cleanPhone = (siteConfig.contact.whatsapp || '+92 301 8665163').replace(/[^0-9]/g, '');
+    const messageLines = [
+      `*New Contact Inquiry - Universal Interior & Microservices*`,
+      `━━━━━━━━━━━━━━━━━━━━━━━━`,
+      `👤 *Name:* ${formData.name}`,
+      `📞 *Phone:* ${formData.phone}`,
+      formData.email ? `✉️ *Email:* ${formData.email}` : null,
+      `📌 *Topic:* ${formData.subject || 'General Inquiry'}`,
+      ``,
+      `💬 *Message:*`,
+      formData.message,
+      `━━━━━━━━━━━━━━━━━━━━━━━━`,
+      `_Sent via Universal Interior Website_`
+    ].filter(Boolean).join('\n');
+
+    const targetUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageLines)}`;
+    setWhatsappUrl(targetUrl);
     setSubmitted(true);
-    // Will integrate API here
+
+    if (typeof window !== 'undefined') {
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const contactInfo = [
@@ -93,22 +114,43 @@ export default function ContactPage() {
             <div className="lg:col-span-3 bg-white rounded-2xl sm:rounded-3xl border border-surface-200 p-5 sm:p-8 shadow-sm">
               {submitted ? (
                 <div className="text-center py-12">
-                  <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
-                    <Send className="h-8 w-8 text-emerald-600" />
+                  <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6 shadow-md shadow-emerald-500/10">
+                    <MessageCircle className="h-10 w-10 text-emerald-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-surface-900 mb-2">Message Sent!</h3>
-                  <p className="text-surface-500 max-w-md mx-auto">
-                    Thank you for reaching out. We'll get back to you within 24 hours.
+                  <h3 className="text-2xl font-bold text-surface-900 mb-2">Message Ready for WhatsApp!</h3>
+                  <p className="text-surface-500 max-w-md mx-auto mb-6 text-sm">
+                    We have formatted your inquiry for WhatsApp. If WhatsApp did not open automatically, click below to start chatting directly with our support desk:
                   </p>
-                  <button
-                    onClick={() => { setSubmitted(false); setFormData({ name: '', phone: '', email: '', subject: '', message: '' }); }}
-                    className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-white font-semibold hover:bg-brand-700 transition-colors"
-                  >
-                    Send Another Message
-                  </button>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 text-white font-semibold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20"
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                      Open WhatsApp Chat Now
+                    </a>
+                    <button
+                      onClick={() => { setSubmitted(false); setFormData({ name: '', phone: '', email: '', subject: '', message: '' }); }}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-surface-200 bg-surface-50 px-6 py-3.5 text-surface-700 font-semibold hover:bg-surface-100 transition-colors"
+                    >
+                      Send Another Message
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="flex items-center gap-3 p-3.5 bg-emerald-50/60 border border-emerald-200/80 rounded-2xl mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                      <MessageCircle className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-surface-900 font-bold text-xs sm:text-sm">Instant WhatsApp Assistance</h2>
+                      <p className="text-[11px] text-surface-500">Submitting will open our WhatsApp desk directly at <strong>+92 301 8665163</strong>.</p>
+                    </div>
+                  </div>
+
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">Full Name *</label>
@@ -118,7 +160,7 @@ export default function ContactPage() {
                         placeholder="Ahmed Khan"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                        className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                       />
                     </div>
                     <div>
@@ -129,7 +171,7 @@ export default function ContactPage() {
                         placeholder="+92 300 1234567"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                        className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                       />
                     </div>
                   </div>
@@ -140,7 +182,7 @@ export default function ContactPage() {
                       placeholder="ahmed@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                      className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                     />
                   </div>
                   <div>
@@ -149,7 +191,7 @@ export default function ContactPage() {
                       required
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22m6%208%204%204%204-4%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:20px] bg-[right_12px_center] bg-no-repeat pr-10"
+                      className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22m6%208%204%204%204-4%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:20px] bg-[right_12px_center] bg-no-repeat pr-10"
                     >
                       <option value="" disabled>Select a topic</option>
                       <option value="General Inquiry">General Inquiry</option>
@@ -168,15 +210,15 @@ export default function ContactPage() {
                       placeholder="Tell us how we can help you..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
+                      className="w-full rounded-xl border border-surface-200 px-4 py-3 text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-8 py-3.5 text-white font-semibold hover:bg-brand-700 active:scale-[0.98] transition-all shadow-lg shadow-brand-200"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-8 py-3.5 text-white font-semibold hover:bg-emerald-700 active:scale-[0.98] transition-all shadow-lg shadow-emerald-600/20"
                   >
-                    <Send className="h-4 w-4" />
-                    Send Message
+                    <MessageCircle className="h-5 w-5" />
+                    Send Message via WhatsApp
                   </button>
                 </form>
               )}
