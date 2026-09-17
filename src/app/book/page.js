@@ -102,7 +102,7 @@ export default function BookPage() {
           time: booking.time,
           locationId: booking.locationId,
           phone: booking.phone,
-          email: booking.email || user?.email || 'customer@example.com'
+          email: user?.email || booking.email || ''
         })
       });
       
@@ -161,7 +161,7 @@ export default function BookPage() {
   }
 
   if (submitted) {
-    const customerEmail = booking.email.trim() || user?.email || 'customer@example.com';
+    const customerEmail = user?.email || booking.email?.trim() || '';
 
     return (
       <div className="min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 bg-surface-50 flex items-center justify-center">

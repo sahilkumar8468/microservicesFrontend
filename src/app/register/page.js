@@ -8,17 +8,17 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register, googleSignIn, sendSmsOtp, verifySmsOtp } = useAuth();
+  const { register, googleSignIn, sendEmailOtp, verifyEmailOtp } = useAuth();
   
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', password: '' });
   const [agreed, setAgreed] = useState(false);
 
-  // Mobile SMS OTP Verification State
+  // Email OTP Verification State
   const [otpStep, setOtpStep] = useState(false);
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
   const [generatedOtp, setGeneratedOtp] = useState('');
-  const [targetPhone, setTargetPhone] = useState('');
+  const [targetEmail, setTargetEmail] = useState('');
   const [timer, setTimer] = useState(60);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -39,15 +39,15 @@ export default function RegisterPage() {
     return () => clearInterval(interval);
   }, [otpStep, timer]);
 
-  // Handle Form Submission -> Trigger Mobile SMS OTP
+  // Handle Form Submission -> Trigger Email OTP
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.phone || formData.phone.trim().length < 8) {
-      setErrorMsg('Please provide a valid registered mobile number.');
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      setErrorMsg('Please provide a valid email address.');
       return;
     }
-    if (!formData.email) {
-      setErrorMsg('Please provide a valid email address.');
+    if (!formData.phone || formData.phone.trim().length < 8) {
+      setErrorMsg('Please provide a valid mobile number.');
       return;
     }
 
@@ -56,23 +56,23 @@ export default function RegisterPage() {
 
     try {
       let demoCode = '';
-      if (typeof sendSmsOtp === 'function') {
+      if (typeof sendEmailOtp === 'function') {
         try {
-          const res = await sendSmsOtp(formData.phone, formData.email);
+          const res = await sendEmailOtp(formData.email);
           if (res?.demoOtp) demoCode = res.demoOtp;
         } catch (apiErr) {
-          console.warn('Backend SMS API error, using client fallback:', apiErr.message);
+          console.warn('Backend Email API error, using client fallback:', apiErr.message);
         }
       }
 
       const activeOtp = demoCode || Math.floor(100000 + Math.random() * 900000).toString();
-      setTargetPhone(formData.phone);
+      setTargetEmail(formData.email);
       setGeneratedOtp(activeOtp);
       setTimer(60);
       setOtpCode(['', '', '', '', '', '']);
       setOtpStep(true);
     } catch (err) {
-      setErrorMsg(err.message || 'Failed to dispatch verification code to mobile number.');
+      setErrorMsg(err.message || 'Failed to dispatch verification code to email address.');
     } finally {
       setIsSendingOtp(false);
     }
@@ -99,17 +99,17 @@ export default function RegisterPage() {
     }
   };
 
-  // Resend Mobile SMS OTP
+  // Resend Email OTP
   const handleResendOtp = async () => {
     setErrorMsg('');
     try {
       let demoCode = '';
-      if (typeof sendSmsOtp === 'function') {
+      if (typeof sendEmailOtp === 'function') {
         try {
-          const res = await sendSmsOtp(formData.phone, formData.email);
+          const res = await sendEmailOtp(formData.email);
           if (res?.demoOtp) demoCode = res.demoOtp;
         } catch (apiErr) {
-          console.warn('Backend SMS API error on resend:', apiErr.message);
+          console.warn('Backend Email API error on resend:', apiErr.message);
         }
       }
       const newOtp = demoCode || Math.floor(100000 + Math.random() * 900000).toString();
@@ -117,11 +117,11 @@ export default function RegisterPage() {
       setTimer(60);
       setOtpCode(['', '', '', '', '', '']);
     } catch (err) {
-      setErrorMsg(err.message || 'Failed to resend SMS code.');
+      setErrorMsg(err.message || 'Failed to resend email code.');
     }
   };
 
-  // Verify Mobile SMS OTP & Save to Database
+  // Verify Email OTP & Save to Database
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     const entered = otpCode.join('');
@@ -133,12 +133,12 @@ export default function RegisterPage() {
     setIsVerifying(true);
     setErrorMsg('');
     try {
-      if (typeof verifySmsOtp === 'function') {
+      if (typeof verifyEmailOtp === 'function') {
         try {
-          await verifySmsOtp(formData.phone, entered);
+          await verifyEmailOtp(formData.email, entered);
         } catch (vErr) {
           if (entered !== generatedOtp && entered !== '123456') {
-            throw new Error(vErr.message || `Invalid OTP code. Please enter the correct code sent to ${targetPhone}.`);
+            throw new Error(vErr.message || `Invalid OTP code. Please enter the correct code sent to ${targetEmail}.`);
           }
         }
       } else if (entered !== generatedOtp && entered !== '123456') {
@@ -332,11 +332,11 @@ export default function RegisterPage() {
                 >
                   {isSendingOtp ? (
                     <>
-                      <RefreshCw className="h-4 w-4 animate-spin" /> Sending SMS OTP...
+                      <RefreshCw className="h-4 w-4 animate-spin" /> Sending Email OTP...
                     </>
                   ) : (
                     <>
-                      Create Account & Get SMS OTP
+                      Create Account & Get Email OTP
                       <ArrowRight className="h-4 w-4" />
                     </>
                   )}
@@ -344,21 +344,21 @@ export default function RegisterPage() {
               </form>
             </>
           ) : (
-            /* Mobile SMS OTP Verification Screen */
+            /* Email OTP Verification Screen */
             <div className="space-y-6">
-              {/* Mobile SMS Notification Banner */}
-              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-left">
+              {/* Email Notification Banner */}
+              <div className="p-4 rounded-xl bg-orange-50 border border-orange-200 text-left">
                 <div className="flex items-start gap-3">
-                  <Smartphone className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <Mail className="h-5 w-5 text-orange-600 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
-                      SMS OTP Sent To Mobile Number
+                    <p className="text-xs font-semibold uppercase tracking-wider text-orange-800">
+                      Email OTP Sent To Your Inbox
                     </p>
-                    <p className="text-sm text-emerald-950 mt-0.5">
-                      Your verification OTP is: <strong className="text-base text-emerald-700 font-mono tracking-wider">{generatedOtp}</strong>
+                    <p className="text-sm text-surface-900 mt-0.5">
+                      Your verification OTP is: <strong className="text-base text-orange-600 font-mono tracking-wider">{generatedOtp}</strong>
                     </p>
-                    <p className="text-xs text-emerald-700 mt-1">
-                      (Check SMS messages on <strong>{targetPhone}</strong> &bull; Valid for 5 mins)
+                    <p className="text-xs text-surface-500 mt-1">
+                      (Check your inbox at <strong>{targetEmail}</strong> &bull; Valid for 5 mins)
                     </p>
                   </div>
                 </div>
@@ -367,16 +367,16 @@ export default function RegisterPage() {
               {verifiedSuccess ? (
                 <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
                   <CheckCircle className="h-12 w-12 text-emerald-600 mx-auto animate-bounce" />
-                  <h3 className="text-xl font-bold text-emerald-900">Mobile Verified & Registered!</h3>
+                  <h3 className="text-xl font-bold text-emerald-900">Email Verified & Registered!</h3>
                   <p className="text-sm text-emerald-700">
-                    Your mobile number and account have been verified. Redirecting to login...
+                    Your email address and account have been verified. Redirecting to login...
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleVerifyOtp} className="space-y-6">
                   <div>
                     <label className="block text-sm font-semibold text-surface-700 text-center mb-3">
-                      Enter 6-Digit SMS OTP Code
+                      Enter 6-Digit Email OTP Code
                     </label>
                     <div className="flex justify-center gap-1.5 sm:gap-2">
                       {otpCode.map((digit, idx) => (
@@ -401,11 +401,11 @@ export default function RegisterPage() {
                   >
                     {isVerifying ? (
                       <>
-                        <RefreshCw className="h-4 w-4 animate-spin" /> Verifying Mobile & Registering...
+                        <RefreshCw className="h-4 w-4 animate-spin" /> Verifying Email & Registering...
                       </>
                     ) : (
                       <>
-                        Verify Mobile & Complete Sign Up
+                        Verify Email & Complete Sign Up
                         <CheckCircle className="h-4 w-4" />
                       </>
                     )}
@@ -417,7 +417,7 @@ export default function RegisterPage() {
                       onClick={() => setOtpStep(false)}
                       className="text-surface-500 hover:text-surface-700 font-medium"
                     >
-                      ← Edit Mobile Number / Go Back
+                      ← Edit Email / Go Back
                     </button>
 
                     <button
@@ -426,7 +426,7 @@ export default function RegisterPage() {
                       onClick={handleResendOtp}
                       className="text-brand-600 font-semibold hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {timer > 0 ? `Resend Code in ${timer}s` : 'Resend SMS OTP'}
+                      {timer > 0 ? `Resend Code in ${timer}s` : 'Resend Email OTP'}
                     </button>
                   </div>
                 </form>
@@ -459,7 +459,7 @@ export default function RegisterPage() {
           <div className="mt-8 space-y-3 text-left max-w-xs mx-auto">
             {[
               'Direct Google & Email registration',
-              'Instant Mobile SMS OTP verification',
+              'Instant Email OTP verification',
               'Verified & skilled professionals',
               'Same-day service available',
             ].map((item) => (
@@ -472,7 +472,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* --- MOCK GOOGLE SELECTOR MODAL --- */}
+      {/* --- GOOGLE SIGN IN MODAL --- */}
       {showGoogleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3.5 sm:p-4">
           <div className="bg-white w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-surface-200 shadow-2xl p-4 sm:p-6 relative animate-in fade-in-50 zoom-in-95 duration-200">
@@ -498,39 +498,7 @@ export default function RegisterPage() {
                 </svg>
               </div>
               <h2 className="text-lg sm:text-xl font-bold text-surface-900">Sign in with Google</h2>
-              <p className="text-xs sm:text-sm text-surface-500 mt-1">Choose an account to continue to HomeSolution</p>
-            </div>
-
-            <div className="space-y-2">
-              {[
-                { name: 'Fatima Ali', email: 'fatima.ali@gmail.com' },
-                { name: 'Zeeshan Khan', email: 'zeeshan.khan@gmail.com' }
-              ].map((acc) => (
-                <button
-                  key={acc.email}
-                  disabled={isGoogleSubmitting}
-                  onClick={() => handleGoogleAuth(acc.email, acc.name)}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-surface-100 hover:border-brand-300 hover:bg-brand-50/50 text-left transition-all group"
-                >
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm shrink-0">
-                    {acc.name.charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-surface-950 text-xs sm:text-sm truncate">{acc.name}</p>
-                    <p className="text-[11px] sm:text-xs text-surface-500 truncate">{acc.email}</p>
-                  </div>
-                  <span className="text-xs text-brand-600 font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
-                    Select &rarr;
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <div className="relative flex items-center justify-center my-4">
-              <div className="border-t border-surface-100 w-full" />
-              <span className="bg-white px-2.5 text-[10px] font-bold uppercase tracking-wider text-surface-400 absolute">
-                Or Use Custom Google Account
-              </span>
+              <p className="text-xs sm:text-sm text-surface-500 mt-1">Connect your Google account to continue</p>
             </div>
 
             <div className="space-y-3">

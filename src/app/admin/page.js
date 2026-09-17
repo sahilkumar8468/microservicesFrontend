@@ -8,7 +8,8 @@ import {
   Calendar, Clock, LogOut, ShieldAlert, RefreshCw, Star,
   UserCheck, KeySquare, Eye, EyeOff, ShieldCheck, AlertTriangle,
   Search, Mail, Phone, Globe, Shield, Activity, MapPin, Sliders,
-  Navigation, Save, Map as MapIcon, Send, CheckSquare, Square
+  Navigation, Save, Map as MapIcon, Send, CheckSquare, Square,
+  FileText, Sparkles
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -83,17 +84,20 @@ export default function AdminPage() {
   const [serviceSubmitting, setServiceSubmitting] = useState(false);
 
   // Email Marketing State
-  const [emailTargetType, setEmailTargetType] = useState('all'); // 'all' | 'selected'
+  const [emailTargetType, setEmailTargetType] = useState('custom'); // 'all' | 'selected' | 'custom'
   const [selectedRecipientEmails, setSelectedRecipientEmails] = useState([]);
+  const [customRecipientInput, setCustomRecipientInput] = useState('sahilkhiyatani25@gmail.com');
   const [emailSubject, setEmailSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [quickTesting, setQuickTesting] = useState(false);
   const [emailNotice, setEmailNotice] = useState('');
   const [emailError, setEmailError] = useState('');
   const [campaigns, setCampaigns] = useState([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
+  const [selectedCampaignForModal, setSelectedCampaignForModal] = useState(null);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://micro-services-backend.vercel.app/api';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000/api' : 'https://micro-services-backend.vercel.app/api');
 
   const getAdminToken = () => {
     if (typeof window !== 'undefined') {
@@ -134,6 +138,12 @@ export default function AdminPage() {
     }
   }, [isAdminLoggedIn]);
 
+  useEffect(() => {
+    if (isAdminLoggedIn && activeTab === 'email-marketing') {
+      fetchCampaigns();
+    }
+  }, [activeTab, isAdminLoggedIn]);
+
   const fetchAllAdminData = () => {
     fetchMetrics();
     fetchUsers();
@@ -153,12 +163,47 @@ export default function AdminPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        setCampaigns(data);
+        setCampaigns(Array.isArray(data) ? data : []);
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        console.warn('Failed to load campaigns:', errData);
       }
     } catch (e) {
       console.error('Error fetching campaigns:', e);
     } finally {
       setLoadingCampaigns(false);
+    }
+  };
+
+  const handleQuickTestBroadcast = async (customEmail = 'sahilkhiyatani25@gmail.com') => {
+    setQuickTesting(true);
+    setEmailNotice('');
+    setEmailError('');
+    try {
+      const token = getAdminToken();
+      const nowStr = new Date().toLocaleTimeString();
+      const payload = {
+        targetType: 'Direct Test Broadcast',
+        recipientEmails: [customEmail],
+        subject: `⚡ Test Email Campaign (${nowStr}) - Universal Interior`,
+        body: `Dear Sahil,\n\nThis is an automated live test broadcast from Universal Interior & Microservices Email Campaign System.\n\nFrom: universalinteriormicroservices@gmail.com\nTo: ${customEmail}\nTimestamp: ${new Date().toLocaleString()}\nStatus: Verified Operational\n\nThank you for testing the Email Marketing Campaign system!`
+      };
+      const res = await fetch(`${API_URL}/admin/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to dispatch test broadcast');
+      setEmailNotice(`✅ Live test broadcast email successfully delivered to ${customEmail}!`);
+      fetchCampaigns();
+    } catch (err) {
+      setEmailError(err.message);
+    } finally {
+      setQuickTesting(false);
     }
   };
 
@@ -170,9 +215,31 @@ export default function AdminPage() {
 
     try {
       const token = getAdminToken();
+
+      let finalRecipients = [];
+      if (emailTargetType === 'all') {
+        finalRecipients = users.map(u => u.email).filter(Boolean);
+        if (finalRecipients.length === 0) {
+          throw new Error('No registered customer emails exist in the database. Please select "Custom / Test Email" to send to a specific email address.');
+        }
+      } else if (emailTargetType === 'selected') {
+        finalRecipients = selectedRecipientEmails;
+        if (finalRecipients.length === 0) {
+          throw new Error('Please select at least one customer from the list.');
+        }
+      } else if (emailTargetType === 'custom') {
+        finalRecipients = customRecipientInput
+          .split(',')
+          .map(e => e.trim())
+          .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+        if (finalRecipients.length === 0) {
+          throw new Error('Please enter at least one valid recipient email address (e.g., sahilkhiyatani25@gmail.com).');
+        }
+      }
+
       const payload = {
-        targetType: emailTargetType,
-        recipientEmails: selectedRecipientEmails,
+        targetType: emailTargetType === 'custom' ? 'Custom / Test Audience' : (emailTargetType === 'all' ? 'all' : 'selected'),
+        recipientEmails: finalRecipients,
         subject: emailSubject,
         body: emailBody
       };
@@ -192,6 +259,7 @@ export default function AdminPage() {
       setEmailSubject('');
       setEmailBody('');
       setSelectedRecipientEmails([]);
+      setCustomRecipientInput('');
       fetchCampaigns();
     } catch (err) {
       setEmailError(err.message);
@@ -1165,7 +1233,6 @@ export default function AdminPage() {
                             </div>
                             <div>
                               <p className="text-surface-900 font-bold text-sm">{emp.name}</p>
-                              <p className="text-surface-400 font-mono text-[10px]">{emp.id}</p>
                             </div>
                           </div>
                         </td>
@@ -1540,6 +1607,42 @@ export default function AdminPage() {
         {activeTab === 'email-marketing' && (
           <div className="space-y-6">
             
+            {/* Quick Test Callout Banner */}
+            <div className="bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-rose-500/10 border border-orange-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-orange-500/20">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-surface-900 font-extrabold text-sm flex items-center gap-2">
+                    One-Click Email Campaign Test
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Live Gmail SMTP</span>
+                  </h3>
+                  <p className="text-surface-600 text-xs mt-0.5 font-medium">
+                    Quickly dispatch a test email broadcast directly to <strong className="text-surface-900 font-mono">sahilkhiyatani25@gmail.com</strong> and inspect the live log below.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={quickTesting}
+                onClick={() => handleQuickTestBroadcast('sahilkhiyatani25@gmail.com')}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-extrabold text-xs shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
+              >
+                {quickTesting ? (
+                  <>
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                    Sending Test...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-3.5 w-3.5" />
+                    Send Test to sahilkhiyatani25@gmail.com
+                  </>
+                )}
+              </button>
+            </div>
+
             {/* Compose Campaign Card */}
             <div className="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
               <div className="flex items-center gap-3 pb-4 mb-6 border-b border-surface-100">
@@ -1570,7 +1673,7 @@ export default function AdminPage() {
                 {/* Target Recipient Selection */}
                 <div>
                   <label className="block text-xs font-bold text-surface-700 uppercase tracking-wider mb-2">Target Audience *</label>
-                  <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="grid sm:grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={() => setEmailTargetType('all')}
@@ -1581,12 +1684,12 @@ export default function AdminPage() {
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-surface-900 text-sm">Send to All Registered Customers</span>
+                        <span className="font-bold text-surface-900 text-sm">All Customers</span>
                         <span className="text-xs font-mono font-extrabold bg-orange-100 text-orange-800 px-2 py-0.5 rounded-md">
-                          {users.length} accounts
+                          {users.length}
                         </span>
                       </div>
-                      <p className="text-xs text-surface-500 mt-1">Broadcast email to every registered user account.</p>
+                      <p className="text-xs text-surface-500 mt-1">Broadcast to all registered users.</p>
                     </button>
 
                     <button
@@ -1599,68 +1702,130 @@ export default function AdminPage() {
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-surface-900 text-sm">Select Specific Customers</span>
+                        <span className="font-bold text-surface-900 text-sm">Select Customers</span>
                         <span className="text-xs font-mono font-extrabold bg-surface-200 text-surface-800 px-2 py-0.5 rounded-md">
-                          {selectedRecipientEmails.length} selected
+                          {selectedRecipientEmails.length}
                         </span>
                       </div>
-                      <p className="text-xs text-surface-500 mt-1">Choose 1 or more custom customer email addresses.</p>
+                      <p className="text-xs text-surface-500 mt-1">Pick from customer list.</p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEmailTargetType('custom')}
+                      className={`p-4 rounded-xl border text-left transition-all ${
+                        emailTargetType === 'custom'
+                          ? 'border-orange-500 bg-orange-50/50 ring-2 ring-orange-500/20'
+                          : 'border-surface-200 bg-surface-50/50 hover:bg-surface-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-surface-900 text-sm">Direct / Test Email</span>
+                        <span className="text-xs font-mono font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
+                          Direct
+                        </span>
+                      </div>
+                      <p className="text-xs text-surface-500 mt-1">Send to custom emails or test.</p>
                     </button>
                   </div>
                 </div>
 
+                {/* Direct / Test Email Input */}
+                {emailTargetType === 'custom' && (
+                  <div className="p-4 bg-orange-50/60 border border-orange-200 rounded-xl space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-extrabold text-orange-900 uppercase tracking-wider">
+                        Recipient Email Address(es) *
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setCustomRecipientInput('sahilkhiyatani25@gmail.com')}
+                        className="text-xs font-bold text-orange-700 hover:text-orange-900 underline"
+                      >
+                        + Fill My Email (sahilkhiyatani25@gmail.com)
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="e.g. sahilkhiyatani25@gmail.com, test@example.com (comma-separated)"
+                      value={customRecipientInput}
+                      onChange={(e) => setCustomRecipientInput(e.target.value)}
+                      className="w-full bg-white border border-orange-200 text-surface-900 placeholder:text-surface-400 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 font-mono"
+                    />
+                    <p className="text-[11px] text-surface-500">
+                      Enter one or more email addresses separated by commas. Live emails will be dispatched via <strong>universalinteriormicroservices@gmail.com</strong>.
+                    </p>
+                  </div>
+                )}
+
                 {/* Specific Recipient Checklist (If 'selected' chosen) */}
                 {emailTargetType === 'selected' && (
                   <div className="p-4 bg-surface-50 border border-surface-200 rounded-xl space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-surface-700 uppercase tracking-wider">
-                        Select Customer Email Accounts ({selectedRecipientEmails.length} Selected)
-                      </span>
-                      <div className="flex gap-2">
+                    {users.length === 0 ? (
+                      <div className="text-center py-6 text-surface-500 text-xs">
+                        <p className="font-semibold text-surface-700">No registered customer profiles found in database.</p>
+                        <p className="mt-1 text-surface-400">Please switch to <strong>Direct / Test Email</strong> above to send an email campaign to any custom address.</p>
                         <button
                           type="button"
-                          onClick={() => setSelectedRecipientEmails(users.map(u => u.email))}
-                          className="text-[11px] font-bold text-orange-600 hover:text-orange-700 underline"
+                          onClick={() => setEmailTargetType('custom')}
+                          className="mt-3 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-lg transition-all"
                         >
-                          Select All
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedRecipientEmails([])}
-                          className="text-[11px] font-bold text-surface-400 hover:text-surface-600 underline"
-                        >
-                          Deselect All
+                          Switch to Direct / Test Email &rarr;
                         </button>
                       </div>
-                    </div>
-
-                    <div className="max-h-48 overflow-y-auto space-y-1.5 pr-2">
-                      {users.map((u) => {
-                        const isChecked = selectedRecipientEmails.includes(u.email);
-                        return (
-                          <div
-                            key={u.id}
-                            onClick={() => toggleRecipientEmail(u.email)}
-                            className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer transition-all ${
-                              isChecked
-                                ? 'bg-orange-50/80 border-orange-300 text-orange-950 font-bold'
-                                : 'bg-white border-surface-200 text-surface-700 hover:bg-surface-100'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              {isChecked ? (
-                                <CheckSquare className="h-4 w-4 text-orange-600 shrink-0" />
-                              ) : (
-                                <Square className="h-4 w-4 text-surface-400 shrink-0" />
-                              )}
-                              <span className="text-xs font-semibold">{u.name}</span>
-                              <span className="text-[11px] text-surface-400 font-mono">({u.email})</span>
-                            </div>
-                            <span className="text-[10px] uppercase font-bold text-surface-400">{u.authProvider}</span>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-extrabold text-surface-700 uppercase tracking-wider">
+                            Select Customer Email Accounts ({selectedRecipientEmails.length} Selected)
+                          </span>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRecipientEmails(users.map(u => u.email))}
+                              className="text-[11px] font-bold text-orange-600 hover:text-orange-700 underline"
+                            >
+                              Select All
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRecipientEmails([])}
+                              className="text-[11px] font-bold text-surface-400 hover:text-surface-600 underline"
+                            >
+                              Deselect All
+                            </button>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+
+                        <div className="max-h-48 overflow-y-auto space-y-1.5 pr-2">
+                          {users.map((u) => {
+                            const isChecked = selectedRecipientEmails.includes(u.email);
+                            return (
+                              <div
+                                key={u.id || u.email}
+                                onClick={() => toggleRecipientEmail(u.email)}
+                                className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer transition-all ${
+                                  isChecked
+                                    ? 'bg-orange-50/80 border-orange-300 text-orange-950 font-bold'
+                                    : 'bg-white border-surface-200 text-surface-700 hover:bg-surface-100'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  {isChecked ? (
+                                    <CheckSquare className="h-4 w-4 text-orange-600 shrink-0" />
+                                  ) : (
+                                    <Square className="h-4 w-4 text-surface-400 shrink-0" />
+                                  )}
+                                  <span className="text-xs font-semibold">{u.name}</span>
+                                  <span className="text-[11px] text-surface-400 font-mono">({u.email})</span>
+                                </div>
+                                <span className="text-[10px] uppercase font-bold text-surface-400">{u.authProvider}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
 
@@ -1694,7 +1859,7 @@ export default function AdminPage() {
                   <button
                     type="submit"
                     disabled={sendingEmail}
-                    className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-orange-500 via-amber-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-orange-500/25 transition-all"
+                    className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-orange-500 via-amber-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-orange-500/25 transition-all disabled:opacity-50"
                   >
                     {sendingEmail ? (
                       <>
@@ -1713,12 +1878,27 @@ export default function AdminPage() {
             {/* Campaign Logs History */}
             <div className="bg-white rounded-2xl border border-surface-200 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-surface-100 flex items-center justify-between">
-                <h3 className="text-surface-900 font-bold text-sm">Past Email Marketing Campaigns Log</h3>
-                <span className="text-xs text-surface-400 font-medium">{campaigns.length} campaigns logged</span>
+                <div>
+                  <h3 className="text-surface-900 font-bold text-sm">Past Email Marketing Campaigns Log</h3>
+                  <span className="text-xs text-surface-400 font-medium">{campaigns.length} campaigns logged</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchCampaigns}
+                  disabled={loadingCampaigns}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-surface-700 hover:text-orange-600 bg-surface-50 hover:bg-white border border-surface-200 rounded-xl transition-all shadow-xs"
+                  title="Refresh campaign logs"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${loadingCampaigns ? 'animate-spin text-orange-600' : ''}`} />
+                  <span>Sync Logs</span>
+                </button>
               </div>
 
               {loadingCampaigns ? (
-                <div className="py-12 text-center text-surface-400 text-xs font-semibold">Loading campaign logs…</div>
+                <div className="py-12 text-center text-surface-400 text-xs font-semibold">
+                  <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2 text-orange-600" />
+                  Loading campaign logs…
+                </div>
               ) : campaigns.length === 0 ? (
                 <div className="py-12 text-center text-surface-400 text-xs font-medium">No past email marketing campaigns logged yet.</div>
               ) : (
@@ -1731,37 +1911,156 @@ export default function AdminPage() {
                         <th className="px-6 py-3.5">Target Audience</th>
                         <th className="px-6 py-3.5">Recipients</th>
                         <th className="px-6 py-3.5">Date & Time</th>
-                        <th className="px-6 py-3.5 text-right">Status</th>
+                        <th className="px-6 py-3.5">Status</th>
+                        <th className="px-6 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-surface-100 text-surface-700">
-                      {campaigns.map((c) => (
-                        <tr key={c.id} className="hover:bg-surface-50/80">
-                          <td className="px-6 py-4 font-mono font-bold text-surface-900">{c.id}</td>
-                          <td className="px-6 py-4 font-bold text-surface-900">{c.subject}</td>
-                          <td className="px-6 py-4">
-                            <span className="bg-surface-100 text-surface-700 font-bold px-2 py-0.5 rounded text-[11px]">
-                              {c.targetType} ({c.recipientCount})
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 font-mono text-[11px] text-surface-500 max-w-xs truncate">
-                            {(c.recipients || []).join(', ')}
-                          </td>
-                          <td className="px-6 py-4 text-surface-500">
-                            {new Date(c.sentAt).toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold px-2.5 py-0.5 rounded-full text-[10px]">
-                              ● {c.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {campaigns.map((c) => {
+                        const recList = Array.isArray(c.recipients)
+                          ? c.recipients
+                          : (typeof c.recipients === 'string' ? [c.recipients] : (c.recipient ? [c.recipient] : []));
+                        return (
+                          <tr key={c.id} className="hover:bg-surface-50/80 transition-colors">
+                            <td className="px-6 py-4 font-mono font-bold text-surface-900">{c.id}</td>
+                            <td className="px-6 py-4 font-bold text-surface-900 max-w-xs truncate">{c.subject}</td>
+                            <td className="px-6 py-4">
+                              <span className="bg-surface-100 text-surface-700 font-bold px-2 py-0.5 rounded text-[11px]">
+                                {c.targetType} ({c.recipientCount || recList.length})
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 font-mono text-[11px] text-surface-500 max-w-xs truncate">
+                              {recList.join(', ') || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 text-surface-500">
+                              {c.sentAt ? new Date(c.sentAt).toLocaleString() : 'N/A'}
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold px-2.5 py-0.5 rounded-full text-[10px]">
+                                ● {c.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-right space-x-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setSelectedCampaignForModal(c)}
+                                className="px-2.5 py-1.5 border border-surface-200 hover:border-orange-300 hover:bg-orange-50 text-surface-700 hover:text-orange-700 rounded-lg transition-all font-bold text-[11px] inline-flex items-center gap-1"
+                                title="View Campaign Details & Message Body"
+                              >
+                                <FileText className="h-3 w-3" /> View
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEmailSubject(c.subject || '');
+                                  setEmailBody(c.body || '');
+                                  setEmailTargetType('custom');
+                                  setCustomRecipientInput(recList.join(', ') || 'sahilkhiyatani25@gmail.com');
+                                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                                }}
+                                className="px-2.5 py-1.5 border border-surface-200 hover:border-brand-300 hover:bg-brand-50 text-surface-700 hover:text-brand-700 rounded-lg transition-all font-bold text-[11px] inline-flex items-center gap-1"
+                                title="Load into Composer"
+                              >
+                                <Edit className="h-3 w-3" /> Load
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
               )}
             </div>
+
+            {/* Campaign Details Inspection Modal */}
+            {selectedCampaignForModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-950/60 backdrop-blur-sm p-3 sm:p-4">
+                <div className="bg-white border border-surface-200 w-full max-w-lg rounded-2xl shadow-2xl p-6 text-surface-900 max-h-[90vh] overflow-y-auto">
+                  <div className="flex items-center justify-between pb-4 border-b border-surface-100">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-5 w-5 text-orange-600" />
+                      <h2 className="text-surface-900 font-bold text-base">Campaign Details</h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCampaignForModal(null)}
+                      className="text-surface-400 hover:text-surface-900 font-bold text-lg p-1"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="mt-4 space-y-4 text-xs">
+                    <div className="flex justify-between items-center bg-surface-50 p-3 rounded-xl border border-surface-200">
+                      <span className="font-bold text-surface-600 uppercase">Campaign ID:</span>
+                      <span className="font-mono font-bold text-surface-900">{selectedCampaignForModal.id}</span>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-surface-600 uppercase tracking-wider mb-1">Subject</label>
+                      <div className="p-3 bg-surface-50 border border-surface-200 rounded-xl font-bold text-surface-900">
+                        {selectedCampaignForModal.subject}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-surface-600 uppercase tracking-wider mb-1">Target Audience & Count</label>
+                      <div className="flex items-center justify-between p-3 bg-surface-50 border border-surface-200 rounded-xl">
+                        <span className="font-semibold text-surface-700">{selectedCampaignForModal.targetType}</span>
+                        <span className="font-mono font-bold bg-orange-100 text-orange-800 px-2.5 py-0.5 rounded-full">
+                          {selectedCampaignForModal.recipientCount || (selectedCampaignForModal.recipients || []).length} recipient(s)
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-surface-600 uppercase tracking-wider mb-1">Recipients</label>
+                      <div className="p-3 bg-surface-50 border border-surface-200 rounded-xl font-mono text-[11px] text-surface-700 max-h-32 overflow-y-auto">
+                        {(Array.isArray(selectedCampaignForModal.recipients) ? selectedCampaignForModal.recipients : [selectedCampaignForModal.recipients]).filter(Boolean).join(', ') || 'N/A'}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-surface-600 uppercase tracking-wider mb-1">Email Message Body</label>
+                      <div className="p-4 bg-orange-50/40 border border-orange-200/60 rounded-xl text-surface-800 leading-relaxed whitespace-pre-wrap font-sans">
+                        {selectedCampaignForModal.body}
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center text-[11px] text-surface-400 pt-2 border-t border-surface-100">
+                      <span>Dispatched: {new Date(selectedCampaignForModal.sentAt).toLocaleString()}</span>
+                      <span className="text-emerald-700 font-bold">● {selectedCampaignForModal.status}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEmailSubject(selectedCampaignForModal.subject || '');
+                        setEmailBody(selectedCampaignForModal.body || '');
+                        setEmailTargetType('custom');
+                        const recs = Array.isArray(selectedCampaignForModal.recipients) ? selectedCampaignForModal.recipients : [selectedCampaignForModal.recipients];
+                        setCustomRecipientInput(recs.filter(Boolean).join(', '));
+                        setSelectedCampaignForModal(null);
+                        window.scrollTo({ top: 300, behavior: 'smooth' });
+                      }}
+                      className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl transition-all"
+                    >
+                      Copy to Composer
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCampaignForModal(null)}
+                      className="px-4 py-2 bg-surface-100 hover:bg-surface-200 text-surface-700 font-bold text-xs rounded-xl transition-all"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
           </div>
         )}

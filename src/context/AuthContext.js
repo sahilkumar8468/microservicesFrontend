@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
   const isRefreshingRef = useRef(false);
   const pendingRequestsQueueRef = useRef([]);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://micro-services-backend.vercel.app/api';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000/api' : 'https://micro-services-backend.vercel.app/api');
 
   useEffect(() => {
     // Check if tokens exist in localStorage on startup
@@ -151,25 +151,25 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const sendSmsOtp = async (phone, email) => {
-    const res = await fetch(`${API_URL}/auth/send-sms-otp`, {
+  const sendEmailOtp = async (email) => {
+    const res = await fetch(`${API_URL}/auth/send-email-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, email })
+      body: JSON.stringify({ email })
     });
 
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.error || 'Failed to send verification SMS');
+      throw new Error(data.error || 'Failed to send verification email');
     }
     return data;
   };
 
-  const verifySmsOtp = async (phone, otp) => {
-    const res = await fetch(`${API_URL}/auth/verify-sms-otp`, {
+  const verifyEmailOtp = async (email, otp) => {
+    const res = await fetch(`${API_URL}/auth/verify-email-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, otp })
+      body: JSON.stringify({ email, otp })
     });
 
     const data = await res.json();
@@ -178,6 +178,10 @@ export function AuthProvider({ children }) {
     }
     return data;
   };
+
+  // Backwards compatibility wrappers
+  const sendSmsOtp = async (phone, email) => sendEmailOtp(email);
+  const verifySmsOtp = async (phone, otp) => verifyEmailOtp(phone, otp);
 
   const register = async (name, email, phone, password) => {
     const res = await fetch(`${API_URL}/auth/register`, {
@@ -279,7 +283,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, refreshToken, loading, register, login, googleSignIn, logout, updateProfile, sendSmsOtp, verifySmsOtp, fetchWithAuth, silentRefreshToken, API_URL }}>
+    <AuthContext.Provider value={{ user, token, refreshToken, loading, register, login, googleSignIn, logout, updateProfile, sendEmailOtp, verifyEmailOtp, sendSmsOtp, verifySmsOtp, fetchWithAuth, silentRefreshToken, API_URL }}>
       {children}
     </AuthContext.Provider>
   );
