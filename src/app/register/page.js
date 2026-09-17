@@ -17,7 +17,6 @@ export default function RegisterPage() {
   // Email OTP Verification State
   const [otpStep, setOtpStep] = useState(false);
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
-  const [generatedOtp, setGeneratedOtp] = useState('');
   const [targetEmail, setTargetEmail] = useState('');
   const [timer, setTimer] = useState(60);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
@@ -55,19 +54,11 @@ export default function RegisterPage() {
     setErrorMsg('');
 
     try {
-      let demoCode = '';
       if (typeof sendEmailOtp === 'function') {
-        try {
-          const res = await sendEmailOtp(formData.email);
-          if (res?.demoOtp) demoCode = res.demoOtp;
-        } catch (apiErr) {
-          console.warn('Backend Email API error, using client fallback:', apiErr.message);
-        }
+        await sendEmailOtp(formData.email.trim());
       }
 
-      const activeOtp = demoCode || Math.floor(100000 + Math.random() * 900000).toString();
-      setTargetEmail(formData.email);
-      setGeneratedOtp(activeOtp);
+      setTargetEmail(formData.email.trim());
       setTimer(60);
       setOtpCode(['', '', '', '', '', '']);
       setOtpStep(true);
@@ -103,17 +94,9 @@ export default function RegisterPage() {
   const handleResendOtp = async () => {
     setErrorMsg('');
     try {
-      let demoCode = '';
       if (typeof sendEmailOtp === 'function') {
-        try {
-          const res = await sendEmailOtp(formData.email);
-          if (res?.demoOtp) demoCode = res.demoOtp;
-        } catch (apiErr) {
-          console.warn('Backend Email API error on resend:', apiErr.message);
-        }
+        await sendEmailOtp(formData.email.trim());
       }
-      const newOtp = demoCode || Math.floor(100000 + Math.random() * 900000).toString();
-      setGeneratedOtp(newOtp);
       setTimer(60);
       setOtpCode(['', '', '', '', '', '']);
     } catch (err) {
@@ -134,21 +117,11 @@ export default function RegisterPage() {
     setErrorMsg('');
     try {
       if (typeof verifyEmailOtp === 'function') {
-        try {
-          await verifyEmailOtp(formData.email, entered);
-        } catch (vErr) {
-          if (entered !== generatedOtp && entered !== '123456') {
-            throw new Error(vErr.message || `Invalid OTP code. Please enter the correct code sent to ${targetEmail}.`);
-          }
-        }
-      } else if (entered !== generatedOtp && entered !== '123456') {
-        setErrorMsg(`Invalid OTP code. For demo, use ${generatedOtp} or 123456.`);
-        setIsVerifying(false);
-        return;
+        await verifyEmailOtp(formData.email.trim(), entered);
       }
 
       // Call backend register API
-      await register(formData.name, formData.email, formData.phone, formData.password);
+      await register(formData.name, formData.email.trim(), formData.phone, formData.password);
       
       setVerifiedSuccess(true);
       setTimeout(() => {
@@ -187,11 +160,11 @@ export default function RegisterPage() {
               Home<span className="text-brand-600">Solution</span>
             </Link>
             <h1 className="text-2xl sm:text-3xl font-bold text-surface-900">
-              {otpStep ? 'Verify Mobile Number' : 'Create Account'}
+              {otpStep ? 'Verify Email Address' : 'Create Account'}
             </h1>
             <p className="mt-2 text-surface-500">
               {otpStep
-                ? `Enter the 6-digit OTP code sent via SMS to ${targetPhone}`
+                ? `Enter the 6-digit verification code sent to ${targetEmail}`
                 : 'Join thousands of happy homeowners in Karachi'}
             </p>
           </div>
@@ -352,13 +325,13 @@ export default function RegisterPage() {
                   <Mail className="h-5 w-5 text-orange-600 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wider text-orange-800">
-                      Email OTP Sent To Your Inbox
+                      Verification Code Sent to Email
                     </p>
-                    <p className="text-sm text-surface-900 mt-0.5">
-                      Your verification OTP is: <strong className="text-base text-orange-600 font-mono tracking-wider">{generatedOtp}</strong>
+                    <p className="text-sm text-surface-900 mt-0.5 font-medium">
+                      We have sent a 6-digit code to <strong>{targetEmail}</strong>.
                     </p>
-                    <p className="text-xs text-surface-500 mt-1">
-                      (Check your inbox at <strong>{targetEmail}</strong> &bull; Valid for 5 mins)
+                    <p className="text-xs text-surface-600 mt-1">
+                      Please check your Gmail / Email inbox (and Spam folder) &bull; Valid for 5 mins
                     </p>
                   </div>
                 </div>
